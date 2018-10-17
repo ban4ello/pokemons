@@ -1,0 +1,65 @@
+body {
+  background: #fff url(./back/container_bg.png);
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+}
+
+li::after {
+  font-family: 'icon-fonts';
+  color: #fff;
+  font-size: 300%;
+  position: absolute;
+}
+
+.icon {
+  font-family: 'icon-fonts';
+}
+
+.icon_male_symbol:before {
+  content: "\f122";
+}
+.icon_female_symbol:before {
+  content: "\f115";
+}
+.icon_pokeball:before {
+  content: "\f12a";
+}
+.icon_arrow_sm_left:before {
+    content: "\f104";
+}
+.icon_arrow_sm_right:before {
+    content: "\f105";
+}
+.wraper {
+  box-sizing: border-box;
+  clear: both;
+  display: block;
+  margin: 0 auto;
+  max-width: 1280px;
+  overflow: hidden;
+  position: relative;
+}
+.container {
+  margin: 0 auto;
+  background: #fff;
+  width: 980px;
+}
+
+.left-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 460px 55px 215px;
+  justify-content: center;
+  margin-left: 20px;
+}
+
+.pokedex-pokemon-details {
+  margin-top: 85px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 755px;
+  grid-gap: 20px;
+}
