@@ -1,56 +1,34 @@
 import React, { Component } from 'react';
+import Pokemons from './pokemons.js';
 import Pokemon from './pokemon.js';
-import GetPokemons from './get-pokemons.js';
+import PokemonInside from './pokemonInside.js';
 import  './style/main.scss';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 class App extends Component {
   constructor () {
     super();
-    this.state = {losding: false, step: 10, currentIndex: 0, pokemons: []};
-    this.getNextPokemons = this.getNextPokemons.bind(this)
-  };
-
-  componentDidMount() {
-    this.getNextPokemons();
-  };
-
-  getNextPokemons () {
-    if (this.state.loading) {
-      return;
-    }
-
-    this.setState({
-      loading: true,
-    });
-
-    const to = this.state.currentIndex + this.state.step;
-    GetPokemons(this.state.currentIndex + 1, to)
-      .then(pokemonsList => {
-        this.setState({
-          loading: false,
-          currentIndex: to,
-          pokemons: [...this.state.pokemons, ...pokemonsList],
-        });
-
-      });
   };
 
   render() {
-    // console.log(this.state.pokemons);
-    const pokemonList = this.state.pokemons.map((pokemon) => {
-      return <Pokemon key={pokemon.id} pokemon={pokemon} />
-    });
-
-
-
     return (
-      <div className="App" >
-        <h1 onClick={this.getNextPokemons}>Pokemon List</h1>
-        {pokemonList}
-      </div>
+      <Router>
+    <div>
+      <ul>
+        <li>
+          <Link to="/pokemons/">Home</Link>
+        </li>
+      </ul>
+
+      <hr />
+
+      <Route exact path="/pokemons" component={Pokemons} />
+      <Route path="/pokemon/:name" component={PokemonInside} />
+
+    </div>
+  </Router>
     );
   }
 }
-
 
 export default App;

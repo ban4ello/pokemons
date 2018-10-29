@@ -1,7 +1,145 @@
+body {
+  // background: #424242 url(../back/body_bg.png);
+  background: #fff url(../back/container_bg.png);
+}
+
+.wraper {
+  width: 100%;
+}
+
 .App {
+  background: #fff;
+  margin: 0 auto;
+  width: 905px;
+  display: grid;
+  grid-template-rows: 350px;
+  grid-template-columns: 205px 205px 205px 205px;
+  grid-gap: 15px;
+  justify-content: center;
+}
+
+.pokemon h2:first-letter {text-transform: uppercase;}
+.type p:first-letter {text-transform: uppercase;}
+
+.pokemon {
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.pokemon:hover {
+  animation-duration: .2s;
+  animation-name: slidein;
+}
+
+@keyframes slidein {
+  from {
+    transform: matrix(1, 0, 0, 1, 0, 0);
+  }
+
+  to {
+    transform: matrix(1, 0, 0, 1, 0, 10);
+  }
+}
+
+.pokemon .collectibles {
+  text-align: center;
+  width: 205px;
+  height: 30px;
+}
+
+.pokemon .collectibles a {
+  display: block;
+  width: 30px;
+  height: 30px;
+}
+
+.pokemon .collectibles div {
+  display: inline-block;
+  margin-left: 13px;
+}
+
+.pokemon .pokemon-index {
+  margin: 0;
+  padding-left: 10px;
+  color: #919191;
+  font-size: 80%;
+  font-weight: bold;
+}
+
+.pokemon h2 {
+  color: #313131;
+  font-size: 145%;
+  margin: 20px 0 3px 15px;
+}
+.pokemon .type {
+  display: inline-block;
+  float: left;
+  margin-left: 10px;
+  border-radius: 3px;
+  width: 75px;
+  height: 20px;
   text-align: center;
 }
 
-.pokemon {
-  color
+.pokemon .type p {
+  margin: 0 1.5625% 0 0;
+  line-height: 18px;
+  font-size: 11px;
+}
+
+.icon {
+  font-family: 'icon-fonts';
+}
+
+.icon { color: #616161; }
+a { text-decoration: none;}
+
+
+.icon_collection:before {
+    content: "\f10e";
+}
+.icon_wishlist:before {
+  content: "\f136";
+}
+.icon_trade:before {
+    content: "\f134";
+}
+
+.icon_add::before {
+  content: "\f101";
+}
+
+#loadMore {
+  clear: both;
+  display: none;
+  width: 100%;
+  text-align: center;
+  padding-top: 65px;
+
+  &.show {
+    display: block;
+  }
+
+  span {
+    display: inline-block;
+    margin-left: 50px;
+    font-size: 100%;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    line-height: 125%;
+    margin: 1.5625%;
+    padding: 0.75em 1.25em 0.675em;
+    vertical-align: middle;
+    text-align: center;
+  }
+}
+
+.button-lightblue {
+  background-color: #30a7d7;
+  color: #fff;
+}
+.button-lightblue {
+  background-color: #30a7d7;
+  color: #fff;
 }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
 
 function getPokemon(num) {
 
@@ -19,9 +19,9 @@ function getPokemon(num) {
     console.log('Fetch Error :-S', err);
   });
 }
+
 function getPokemons (from, to) {
   const pokemonsPromises = Array.from(new Array(to - from + 1)).map((elem, index) => getPokemon(index + from));
-  console.log(pokemonsPromises);
 
   return Promise.all(pokemonsPromises).then(
     (pokemonsList) => {
@@ -30,4 +30,4 @@ function getPokemons (from, to) {
   ).catch(err => {});
 }
 
-export default getPokemons;
+export {getPokemons as GetPokemons, getPokemon as GetPokemon};
