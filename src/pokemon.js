@@ -38,33 +38,30 @@ class Pokemon extends Component {
         <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${pokemon.index}.png`} className="imgFront" alt="pokemon"></img>
         </Link>
 
-      <div className="collectibles">
+        <div className="collectibles">
 
-        <div className="collection">
-          <a href="#" title="Add to My Collection">
-            <span className="icon icon_collection"></span>
-          </a>
+          <div className="collection">
+            <a href="#" title="Add to My Collection">
+              <span className="icon icon_collection"></span>
+            </a>
+          </div>
+
+          <div className="wishlist">
+            <a href="#" title="Add to My Wish List">
+              <span className="icon icon_wishlist"></span>
+            </a>
+          </div>
+
+          <div className="trade">
+            <a href="#" title="Add to My Trade List">
+              <span className="icon icon_trade"></span>
+            </a>
+          </div>
+
         </div>
-
-        <div className="wishlist">
-          <a href="#" title="Add to My Wish List">
-            <span className="icon icon_wishlist"></span>
-          </a>
-        </div>
-
-        <div className="trade">
-          <a href="#" title="Add to My Trade List">
-            <span className="icon icon_trade"></span>
-          </a>
-        </div>
-
-      </div>
-      <p className="pokemon-index">#{pokemon.index}</p>
-      <h2>{pokemon.name}</h2>
-      {typesList}
-
-      {/* <Route path={`${match.path}/:topicId/:id`} component={PokemonInside} /> */}
-
+        <p className="pokemon-index">#{pokemon.index}</p>
+        <h2>{pokemon.name}</h2>
+        {typesList}
       </div>
     );
   }

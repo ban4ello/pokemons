@@ -4,7 +4,6 @@ import Type from './type.js';
 import {GetPokemon} from './get-pokemons.js';
 import {GetEvolution, GetPokemonInfoEvol} from './get-evolution.js';
 import  './style/insidePokemon.scss';
-// import  './style/main.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 class PokemonInside extends Component {
@@ -27,7 +26,7 @@ class PokemonInside extends Component {
     this.getPokemonInfo = this.getPokemonInfo.bind(this);
     this.getPokemonsList = this.getPokemonsList.bind(this);
     this.getVersionPokemon = this.getVersionPokemon.bind(this);
-    this.evolutionPokemonList = this.evolutionPokemonList.bind(this);
+    // this.evolutionPokemonList = this.evolutionPokemonList.bind(this);
   };
 
   componentDidMount() {
@@ -47,11 +46,10 @@ class PokemonInside extends Component {
     this.getDiscriptionPokemon().then((elem) => {
       this.evolution(elem);
     });
-    this.evolutionPokemonList();
+
   };
 
   pokemonInfo(name) {
-    // return fetch(`https://pokeapi.co/api/v2${name}`).then(
     return fetch(`https://pokeapi.co/api/v2${name}`).then(
       function(response) {
         if (response.status !== 200) {
@@ -86,20 +84,19 @@ class PokemonInside extends Component {
       });
   };
 
-  evolutionPokemonList () {
-    return GetPokemonInfoEvol(this.state.evolution)
+  evolutionPokemonList (data) {
+    return GetPokemonInfoEvol(data)
       .then(pokemonsList => {
         this.setState({
-          evolutionList: [pokemonsList],
+          evolutionList: pokemonsList,
         });
-
       });
   }
 
   evolution (elem) {
     return GetEvolution(elem.url)
     .then(data => {
-      console.log(data);
+      this.evolutionPokemonList(data);
       this.setState({
         evolution: data,
       });
@@ -121,7 +118,7 @@ class PokemonInside extends Component {
           discriptionText: sortList[0].text,
           category: category,
         });
-        // console.log(sortList);
+
         return {
           sortList: sortList,
           url: data.evolution_chain.url,
@@ -141,8 +138,6 @@ class PokemonInside extends Component {
       discriptionText: currentOption.text
     });
   };
-
-
 
   getPokemonsList(pokemonIndex) {
     return this.pokemonInfo('/pokemon-species/')
@@ -199,15 +194,13 @@ class PokemonInside extends Component {
 
     let previousPokemon = this.state.pokemonPrevios;
     let nextPokemon = this.state.pokemonNext;
-
+    const infoType = this.state.type;
     let infoList = this.state.info;
     // console.log(infoList);
 
-    let evolution = this.state.evolutionList;
-    console.log(evolution);
-
-
-    const infoType = this.state.type;
+    let evolution = this.state.evolution;
+    // console.log('evolution list -', evolution);
+    let evolutionList = this.state.evolutionList;
 
     const version = this.state.discription.map((elem, index) => {
 
@@ -241,42 +234,89 @@ class PokemonInside extends Component {
 
 
     let finalEvol = evolution.map((elem, index, evolution) => {
-      console.log(evolution);
-      // let onlyFirstLevel = evolution.filter((elem) => {
-      //   return elem.level == '1';
-      // });
+        console.log(evolution);
+        // console.log(this.state.evolutionList);
+      let type = this.state.evolutionList.map((item) => {
+        return this.getType(item);
+      });
+      let indexEvol = this.state.evolutionList.map((item) => {
+        let pokemonIndex = (item.id < 10) ? '00' + item.id :
+        (item.id < 100) ? '0' + item.id : item.id;
+        return pokemonIndex;
+      })
+
+      let onlyFirstLevel = evolution.filter((elem) => {
+        return elem.level == '1';
+      });
       let onlySecondLevel = evolution.filter((elem) => {
         return elem.level == '2';
       });
       let onlyThirdLevel = evolution.filter((elem) => {
         return elem.level == '3';
       });
-      // // console.log(onlyThirdLevel);
-      // // if (onlySecondLevel.length > 3 && onlyThirdLevel.length == 0) {
-      // //   return (
-      // //     <div className={'level' + elem.level} key={index}>
-      // //       <Link to={`/pokemon/${elem.name}/`}>
-      // //         <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/00${index + 1}.png`} className="imgFooter" alt="pokemon"></img>
-      // //         <h3>{elem.name}</h3>
-      // //       </Link>
-      // //       <ul>
-      // //         <li></li>
-      // //       </ul>
-      // //       {/* <span></span> */}
-      // //     </div>
-      // //   );
-      // // })
-      // }
+
+      if (evolution.length == 1) {
+        return (
+          <div key={index} className={'onePokemon'}>
+            <p>This Pokémon does not evolve.</p>
+          <div className={'homeless'}>
+            <Link to={`/pokemon/${elem.name}/`}>
+              <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+              <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+              {type[index]}
+            </Link>
+          </div>
+        </div>
+        );
+      }
+      if (onlySecondLevel.length == 1 && onlyThirdLevel.length == 0) {
+        return (
+          <div key={index} className={'onlyTwoPokemon'}>
+          <div className={'level' + elem.level}>
+            <Link to={`/pokemon/${elem.name}/`}>
+              <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+              <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+              {type[index]}
+            </Link>
+            <ul>
+              <li></li>
+            </ul>
+          </div>
+        </div>
+        );
+      }
+
+      if (onlySecondLevel.length > 1 && onlyThirdLevel.length == 0) {
+        console.log('how EEVEE');
+        return (
+          <div key={index} className={'eevee'}>
+            <div className={'blok' + elem.level}>
+              <div className={'level' + elem.level}>
+                <Link to={`/pokemon/${elem.name}/`}>
+                  <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+                  <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+                  {type[index]}
+                </Link>
+                <ul>
+                  <li></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      }
       return (
-        <div className={'level' + elem.level} key={index}>
-          <Link to={`/pokemon/${elem.name}/`}>
-            <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/00${index + 1}.png`} className="imgFooter" alt="pokemon"></img>
-            <h3>{elem.name}</h3>
-          </Link>
-          <ul>
-            <li></li>
-          </ul>
-          {/* <span></span> */}
+        <div className={'threeEvol'} key={index}>
+          <div className={'level' + elem.level}>
+            <Link to={`/pokemon/${elem.name}/`}>
+              <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+              <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+              {type[index]}
+            </Link>
+            <ul>
+              <li></li>
+            </ul>
+          </div>
         </div>
       );
     })
@@ -407,12 +447,12 @@ class PokemonInside extends Component {
                   </div>
                   {infoType}
                 </div>
-                <div className="weaknesses">
+                {/* <div className="weaknesses">
                   <div className="weaknesses-text">
                     <h3>Weaknesses</h3>
                   </div>
                   {infoType}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -421,7 +461,6 @@ class PokemonInside extends Component {
             <h2>Evolutions</h2>
             <div className="evolution-profile">
               {finalEvol}
-              {/* <span></span> */}
             </div>
           </div>
 

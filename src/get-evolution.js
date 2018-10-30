@@ -23,7 +23,7 @@ function EvolutionInfo(url) {
 const GetEvolution = (url) => {
   return EvolutionInfo(url)
     .then(data => {
-      console.log(data);
+      // console.log(data);
       const arrayEvolution = [];
       let current = 1;
 
