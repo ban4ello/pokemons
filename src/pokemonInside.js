@@ -286,7 +286,7 @@ class PokemonInside extends Component {
         );
       }
 
-      if (onlySecondLevel.length > 1 && onlyThirdLevel.length == 0) {
+      if (onlySecondLevel.length > 2 && onlyThirdLevel.length == 0) {
         console.log('how EEVEE');
         return (
           <div key={index} className={'eevee'}>
@@ -302,6 +302,25 @@ class PokemonInside extends Component {
                 </ul>
               </div>
             </div>
+          </div>
+        );
+      }
+      if (onlySecondLevel.length == 2) {
+        console.log('ok');
+        return (
+          <div key={index} className={'onlyTwoLevel2'}>
+            {/* <div className={'blok' + elem.level}> */}
+              <div className={'level' + elem.level}>
+                <Link to={`/pokemon/${elem.name}/`}>
+                  <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+                  <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+                  {type[index]}
+                </Link>
+                <ul>
+                  <li></li>
+                </ul>
+              </div>
+            {/* </div> */}
           </div>
         );
       }
