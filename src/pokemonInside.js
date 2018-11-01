@@ -5,6 +5,8 @@ import {GetPokemon} from './get-pokemons.js';
 import {GetEvolution, GetPokemonInfoEvol} from './get-evolution.js';
 import  './style/insidePokemon.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import store from './test.js';
+
 
 class PokemonInside extends Component {
   constructor (props) {
@@ -49,26 +51,23 @@ class PokemonInside extends Component {
 
   };
 
-  pokemonInfo(name) {
-    return fetch(`https://pokeapi.co/api/v2${name}`).then(
-      function(response) {
-        if (response.status !== 200) {
-          console.log('Looks like there was a problem. Status Code: ' + response.status);
-
-          return;
-        }
-        return response.json().then(function(data) {
-          return data;
-        });
+  pokemonInfo(pokemonName) {
+    return new Promise ((resolve) => {
+      const globalState = store.getState();
+      console.log(pokemonName);
+      const pokemon = globalState.pokemons.find(({ name }) => name === pokemonName);
+      console.log('pokemon', pokemon);
+      if (pokemon) {
+        resolve(pokemon)
+      } else {
+        GetPokemon(`pokemon/${pokemonName}`)
+          .then(data => resolve(data));
       }
-    )
-    .catch(function(err) {
-      console.log('Fetch Error :-S', err);
     });
   }
 
   getPokemonInfo () {
-    return this.pokemonInfo(`/pokemon/${this.props.match.params.name}/`)
+    return this.pokemonInfo(this.props.match.params.name)
       .then(data => {
         this.setState({
           info: data,
@@ -104,7 +103,7 @@ class PokemonInside extends Component {
   }
 
   getDiscriptionPokemon () {
-    return this.pokemonInfo(`/pokemon-species/${this.props.match.params.name}/`)
+    return GetPokemon(`/pokemon-species/${this.props.match.params.name}/`)
       .then(data => {
         let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
           return {text: flavor_text, language: language.name, version: version.name, };
@@ -140,7 +139,7 @@ class PokemonInside extends Component {
   };
 
   getPokemonsList(pokemonIndex) {
-    return this.pokemonInfo('/pokemon-species/')
+    return GetPokemon('/pokemon-species/')
       .then(data => {
         const pokemonsLength = data.results.length;
         const prevId = pokemonIndex < 2 ? pokemonsLength - 1 : pokemonIndex - 2;
@@ -234,7 +233,6 @@ class PokemonInside extends Component {
 
 
     let finalEvol = evolution.map((elem, index, evolution) => {
-        console.log(evolution);
         // console.log(this.state.evolutionList);
       let type = this.state.evolutionList.map((item) => {
         return this.getType(item);

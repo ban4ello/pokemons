@@ -2,19 +2,34 @@ import React, { Component } from 'react';
 import Pokemon from './pokemon.js';
 import {GetPokemons, GetPokemon} from './get-pokemons.js';
 import  './style/main.scss';
+import { getPokemonsActionCreator } from './test.js';
+import store from './test.js';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 
 class Pokemons extends Component {
   constructor () {
     super();
-    this.state = {loading: false, step: 12, currentIndex: 0, pokemons: [], showBtn: true,};
+    const globalState = store.getState();
+    this.state = {loading: globalState.loading, step: 12, currentIndex: globalState.currentIndex, pokemons: globalState.pokemons, showBtn: true,};
+    console.log(this.state.pokemons.length);
     this.loadNextPokemon = this.loadNextPokemon.bind(this)
+    store.subscribe(() => {
+      const globalState = store.getState();
+      this.setState({
+        loading: globalState.loading,
+        pokemons: globalState.pokemons,
+        currentIndex: globalState.currentIndex,
+      });
+      console.log(this.state.pokemons.length);
+      console.log('updated', globalState);
+    });
   };
 
   componentDidMount() {
-    this.getNextPokemons();
-
+    if (this.state.pokemons.length == 0) {
+      this.getNextPokemons();
+    }  
   };
 
   getNextPokemons () {
@@ -22,16 +37,10 @@ class Pokemons extends Component {
       loading: true,
     });
 
+    const from = this.state.currentIndex + 1;
     const to = this.state.currentIndex + this.state.step;
-    return GetPokemons(this.state.currentIndex + 1, to)
-      .then(pokemonsList => {
-        this.setState({
-          loading: false,
-          currentIndex: to,
-          pokemons: [...this.state.pokemons, ...pokemonsList],
-        });
 
-      });
+      return getPokemonsActionCreator(store, from, to);
   };
 
   loadNextPokemon () {

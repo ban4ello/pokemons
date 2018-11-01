@@ -1,8 +1,8 @@
 // import React, { Component } from 'react';
 
-function getPokemon(num) {
+function getPokemon(endpoint) {
 
-  return fetch(`https://pokeapi.co/api/v2/pokemon/${num}/`).then(
+  return fetch(`https://pokeapi.co/api/v2/${endpoint}/`).then(
     function(response) {
       // console.log(response);
       if (response.status !== 200) {
@@ -21,7 +21,7 @@ function getPokemon(num) {
 }
 
 function getPokemons (from, to) {
-  const pokemonsPromises = Array.from(new Array(to - from + 1)).map((elem, index) => getPokemon(index + from));
+  const pokemonsPromises = Array.from(new Array(to - from + 1)).map((elem, index) => getPokemon(`pokemon/${index + from}`));
 
   return Promise.all(pokemonsPromises).then(
     (pokemonsList) => {

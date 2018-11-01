@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Pokemons from './pokemons.js';
 import Pokemon from './pokemon.js';
+// import store from './redux.js';
 import PokemonInside from './pokemonInside.js';
 import  './style/main.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";

@@ -1,6 +1,5 @@
-const counterNode = document.getElementById('count');
-const PreviousCounterNode = document.getElementById('previous-count');
-const Results = document.getElementById('results');
+import {GetPokemons, GetPokemon} from './get-pokemons.js';
+
      const createStore = (reducer, initialState) => {
        const store = {};
        store.state = initialState;
@@ -8,67 +7,76 @@ const Results = document.getElementById('results');
        store.getState = () => store.state;
        store.subscribe = listener => {
          store.listeners.push(listener);
+
+         if (initialState) {
+           listener();
+         }
        };
        store.dispatch = action => {
-         console.log('> Action', action);
+         if (initialState) {
+           initialState = false;
+         }
+
          store.state = reducer(store.state, action);
          store.listeners.forEach(listener => listener());
        };
+
        return store;
      };
 
      const getInitialState = () => {
        return {
-         count: 0,
-         previousCount: 0,
+         loading: false,
+         pokemons: [],
+         currentIndex: 0,
+         error: null,
        };
      };
-     const reducer = (state = getInitialState(), action) => {
+
+     const reducerFun = (state = getInitialState(), action) => {
        switch (action.type) {
-         case 'COUNT':
-           const nextState = {
-             count: state.count + action.payload.count,
-             previousCount: state.count,
-           };
-           return nextState;
-         case 'SOME_TYPE':
-           const some = {
-             results: action.payload.results,
-           };
-           return some;
+         case 'GET_POKEMONS':
+          return Object.assign({}, state, {
+            loading: true,
+          });
+
+         case 'GET_POKEMONS_SUCCESS':
+           return Object.assign({}, state, {
+             pokemons: [...state.pokemons, ...action.payload.data],
+             currentIndex: action.payload.to,
+             loading: false,
+           });
+
+         case 'GET_POKEMONS_ERROR':
+           return Object.assign({}, state, {
+             error: action.payload,
+             loading: false,
+           });
 
          default:
            return state;
        }
      };
-     const store = createStore(reducer);
-     store.subscribe(() => {
-       const state = store.getState();
-       const count = state.count;
-       const previousCount = state.previousCount;
-       counterNode.innerHTML = count;
-       PreviousCounterNode.innerHTML = previousCount;
-       Results.innerHTML = store.getState().state.results;
-     });
-     // A simple event to dispatch changes
-     document.addEventListener('click', () => {
-       console.log('----- Previous state', store.getState());
+     const store = createStore(reducerFun, getInitialState());
+
+     export function getPokemonsActionCreator (store, from, to) {
        store.dispatch({
-         type: 'COUNT',
-         payload: {
-           count: Math.ceil(Math.random() * 10),
-           previousCount: store.getState(),
-         },
+         type: 'GET_POKEMONS',
        });
-       console.log('+++++ New state', store.getState());
-     });
-     document.addEventListener('dblclick', () => {
-       store.dispatch({
-         type: 'SOME_TYPE',
-         payload: {
-           results: 'sucsses',
-         },
-       });
-       console.log('+++++ New state', store.getState());
-     });
-     store.dispatch({}); // Sets the inital state
+
+       return GetPokemons(from, to)
+        .then((data) => {
+          store.dispatch({
+            type: 'GET_POKEMONS_SUCCESS',
+            payload: {data, to},
+          });
+        })
+        .catch(err => {
+          store.dispatch({
+            type: 'GET_POKEMONS_ERROR',
+            payload: err,
+          });
+        })
+     }
+
+     export default store;

@@ -48,7 +48,7 @@ const GetEvolution = (url) => {
 };
 
 function GetPokemonInfoEvol (array) {
-  const pokemonsPromises = Array.from(array).map((elem, index) => GetPokemon(elem.name));
+  const pokemonsPromises = Array.from(array).map((elem, index) => GetPokemon(`pokemon/${elem.name}`));
 
   return Promise.all(pokemonsPromises).then(
     (pokemonsList) => {
