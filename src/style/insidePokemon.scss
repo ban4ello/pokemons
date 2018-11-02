@@ -491,13 +491,12 @@ span:first-letter {text-transform: uppercase;}
 
 .onlyTwoLevel2 {
   text-align: center;
-  // display: inline-block;
   margin-left: 100px;
 }
 .onlyTwoLevel2 .level1 {
   width: 300px;
   height: 250px;
-  position: relative;k
+  position: relative;
   margin: 100px 0 0 30px;
   position: relative;
   display: flex;
@@ -511,5 +510,4 @@ span:first-letter {text-transform: uppercase;}
 }
 .onlyTwoLevel2 .level2 {
   padding: 15px 10px;
-  // float: left;
 }

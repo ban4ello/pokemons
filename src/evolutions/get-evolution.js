@@ -1,4 +1,4 @@
-import {GetPokemon} from './get-pokemons.js';
+import {GetPokemon} from '../get-pokemons.js';
 
 function EvolutionInfo(url) {
 

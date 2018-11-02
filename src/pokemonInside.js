@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Pokemon from './pokemon.js';
 import Type from './type.js';
 import {GetPokemon} from './get-pokemons.js';
-import {GetEvolution, GetPokemonInfoEvol} from './get-evolution.js';
+// import {getVersion} from './version-pokemon.js';
+import {GetEvolution, GetPokemonInfoEvol} from './evolutions/get-evolution.js';
 import  './style/insidePokemon.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
@@ -26,7 +27,6 @@ class PokemonInside extends Component {
     this.getPokemonInfo = this.getPokemonInfo.bind(this);
     this.getPokemonsList = this.getPokemonsList.bind(this);
     this.getVersionPokemon = this.getVersionPokemon.bind(this);
-    // this.evolutionPokemonList = this.evolutionPokemonList.bind(this);
   };
 
   componentDidMount() {
@@ -192,18 +192,7 @@ class PokemonInside extends Component {
       category: this.state.category,
     };
 
-    let previousPokemon = this.state.pokemonPrevios;
-    let nextPokemon = this.state.pokemonNext;
-    const infoType = this.state.type;
-    let infoList = this.state.info;
-    // console.log(infoList);
-
-    let evolution = this.state.evolution;
-    // console.log('evolution list -', evolution);
-    let evolutionList = this.state.evolutionList;
-
     const version = this.state.discription.map((elem, index) => {
-
       return <option key={index} value={index}>{elem.version}</option>;
     })
 
@@ -221,11 +210,11 @@ class PokemonInside extends Component {
 
       return acum;
     }, { sumOfValue: 0, markup: [], });
-    let validPreviousIndex = previousPokemon.id + 1;
-    let validNextIndex = nextPokemon.id + 1;
+    let validPreviousIndex = this.state.pokemonPrevios.id + 1;
+    let validNextIndex = this.state.pokemonNext.id + 1;
 
-    let pokemonIndex = (infoList.id < 10) ? '00' + infoList.id :
-                    (infoList.id < 100) ? '0' + infoList.id : infoList.id;
+    let pokemonIndex = (this.state.info.id < 10) ? '00' + this.state.info.id :
+                    (this.state.info.id < 100) ? '0' + this.state.info.id : this.state.info.id;
 
     let indexPreviousPokemon = (validPreviousIndex < 10) ? '00' + validPreviousIndex :
                     (validPreviousIndex < 100) ? '0' + validPreviousIndex : validPreviousIndex;
@@ -233,9 +222,7 @@ class PokemonInside extends Component {
                     (validNextIndex < 100) ? '0' + validNextIndex : validNextIndex;
 
 
-    let finalEvol = evolution.map((elem, index, evolution) => {
-        console.log(evolution);
-        // console.log(this.state.evolutionList);
+    let finalEvol = this.state.evolution.map((elem, index, evolution) => {
       let type = this.state.evolutionList.map((item) => {
         return this.getType(item);
       });
@@ -309,7 +296,6 @@ class PokemonInside extends Component {
         console.log('ok');
         return (
           <div key={index} className={'onlyTwoLevel2'}>
-            {/* <div className={'blok' + elem.level}> */}
               <div className={'level' + elem.level}>
                 <Link to={`/pokemon/${elem.name}/`}>
                   <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
@@ -320,7 +306,6 @@ class PokemonInside extends Component {
                   <li></li>
                 </ul>
               </div>
-            {/* </div> */}
           </div>
         );
       }
@@ -346,25 +331,25 @@ class PokemonInside extends Component {
           <div className="header">
             <div className="pokedex-pokemon-pagination">
 
-              <Link to={`/pokemon/${previousPokemon.name}/`} className="previous">
+              <Link to={`/pokemon/${this.state.pokemonPrevios.name}/`} className="previous">
                 <div className="pokedex-pokemon-pagination-wrapper">
                   <span className="icon icon_arrow_sm_left"></span>
                   <span className="pokemon-number">#{indexPreviousPokemon}</span>
-                  <span className="pokemon-name" id="pokemon-name">{previousPokemon.name}</span>
+                  <span className="pokemon-name" id="pokemon-name">{this.state.pokemonPrevios.name}</span>
                 </div>
               </Link>
-              <Link to={`/pokemon/${nextPokemon.name}/`} className="next">
+              <Link to={`/pokemon/${this.state.pokemonNext.name}/`} className="next">
                 <div className="pokedex-pokemon-pagination-wrapper">
                   <span className="icon icon_arrow_sm_right"></span>
                   <span className="pokemon-number">#{indexNextPokemon}</span>
-                  <span className="pokemon-name" id="pokemon-name">{nextPokemon.name}</span>
+                  <span className="pokemon-name" id="pokemon-name">{this.state.pokemonNext.name}</span>
                 </div>
               </Link>
             </div>
 
             <div className="pokedex-pokemon-pagination-title">
               <div className="title-text">
-                <span>{infoList.name}</span>
+                <span>{this.state.info.name}</span>
                 <span>#{pokemonIndex}</span>
               </div>
             </div>
@@ -464,13 +449,13 @@ class PokemonInside extends Component {
                   <div className="type-text">
                     <h3>Type</h3>
                   </div>
-                  {infoType}
+                  {this.state.type}
                 </div>
                 {/* <div className="weaknesses">
                   <div className="weaknesses-text">
                     <h3>Weaknesses</h3>
                   </div>
-                  {infoType}
+                  {this.state.type}
                 </div> */}
               </div>
             </div>
