@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import Pokemon from './pokemon.js';
 import Type from './type.js';
 import {GetPokemon} from './get-pokemons.js';
-// import {getVersion} from './version-pokemon.js';
+import {getPokemon, getPokemonSpecies, getPokemonSpeciesByName} from './components/fetch.js';
+import PreviousAndNextPokemon from './components/previousAndNextPokemon.js';
+import Discription from './components/discription.js';
 import {GetEvolution, GetPokemonInfoEvol} from './evolutions/get-evolution.js';
 import  './style/insidePokemon.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
@@ -10,6 +12,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 class PokemonInside extends Component {
   constructor (props) {
     super(props);
+    console.log(props);
     this.state = {
       discription: [],
       info: [],
@@ -24,9 +27,9 @@ class PokemonInside extends Component {
       evolution: [],
       evolutionList: [],
      };
-    this.getPokemonInfo = this.getPokemonInfo.bind(this);
-    this.getPokemonsList = this.getPokemonsList.bind(this);
-    this.getVersionPokemon = this.getVersionPokemon.bind(this);
+    // this.getPokemonInfo = this.getPokemonInfo.bind(this);
+    // this.getPokemonsList = this.getPokemonsList.bind(this);
+    // this.getVersionPokemon = this.getVersionPokemon.bind(this);
   };
 
   componentDidMount() {
@@ -40,50 +43,46 @@ class PokemonInside extends Component {
   };
 
   fetchAllData () {
-    this.getPokemonInfo().then((id) => {
-      this.getPokemonsList(id);
-    });
-    this.getDiscriptionPokemon().then((elem) => {
-      this.evolution(elem);
-    });
-
-  };
-
-  pokemonInfo(name) {
-    return fetch(`https://pokeapi.co/api/v2${name}`).then(
-      function(response) {
-        if (response.status !== 200) {
-          console.log('Looks like there was a problem. Status Code: ' + response.status);
-
-          return;
-        }
-        return response.json().then(function(data) {
-          return data;
-        });
-      }
-    )
-    .catch(function(err) {
-      console.log('Fetch Error :-S', err);
-    });
-  }
-
-  getPokemonInfo () {
-    return this.pokemonInfo(`/pokemon/${this.props.match.params.name}/`)
+    getPokemon(this.props.match.params.name)
       .then(data => {
+        console.log(data);
         this.setState({
           info: data,
           stats: this.getAtributes(data),
           height: data.height,
           weight: this.getOptions(data).weight,
-          abilities: this.getOptions(data).abilities,
+          abilities: data.abilities[0],
           id: data.id,
           type: this.getType(data),
         });
 
+        this.getPokemonsList(data.id);
+
         return data.id;
       });
+    this.getDiscriptionPokemon().then((elem) => {
+      // this.evolution(elem);
+    });
+
   };
 
+  // pokemonInfo(name) {
+  //   return fetch(`https://pokeapi.co/api/v2${name}`).then(
+  //     function(response) {
+  //       if (response.status !== 200) {
+  //         console.log('Looks like there was a problem. Status Code: ' + response.status);
+  //
+  //         return;
+  //       }
+  //       return response.json().then(function(data) {
+  //         return data;
+  //       });
+  //     }
+  //   )
+  //   .catch(function(err) {
+  //     console.log('Fetch Error :-S', err);
+  //   });
+  // }
   evolutionPokemonList (data) {
     return GetPokemonInfoEvol(data)
       .then(pokemonsList => {
@@ -104,7 +103,7 @@ class PokemonInside extends Component {
   }
 
   getDiscriptionPokemon () {
-    return this.pokemonInfo(`/pokemon-species/${this.props.match.params.name}/`)
+    return getPokemonSpeciesByName(this.props.match.params.name)
       .then(data => {
         let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
           return {text: flavor_text, language: language.name, version: version.name, };
@@ -125,22 +124,22 @@ class PokemonInside extends Component {
         }
       });
   };
-
-  getVersionPokemon (e) {
-    if (!e) return;
-
-    const target = e.target || e.srcElement;
-    const currentOption = this.state.discription[target.value];
-
-    if (!currentOption) return;
-
-    this.setState({
-      discriptionText: currentOption.text
-    });
-  };
+  //
+  // getVersionPokemon (e) {
+  //   if (!e) return;
+  //
+  //   const target = e.target || e.srcElement;
+  //   const currentOption = this.state.discription[target.value];
+  //
+  //   if (!currentOption) return;
+  //
+  //   this.setState({
+  //     discriptionText: currentOption.text
+  //   });
+  // };
 
   getPokemonsList(pokemonIndex) {
-    return this.pokemonInfo('/pokemon-species/')
+    return getPokemonSpecies()
       .then(data => {
         const pokemonsLength = data.results.length;
         const prevId = pokemonIndex < 2 ? pokemonsLength - 1 : pokemonIndex - 2;
@@ -185,16 +184,17 @@ class PokemonInside extends Component {
   }
 
   render() {
-    let option = {
-      height: this.state.height,
-      weight: this.state.weight,
-      abilities: this.state.abilities,
-      category: this.state.category,
-    };
-
-    const version = this.state.discription.map((elem, index) => {
-      return <option key={index} value={index}>{elem.version}</option>;
-    })
+    console.log(this.state);
+    // const info = {
+    //   discription: this.state.discription,
+    //   discriptionText: this.state.discriptionText,
+    //   type: this.state.type,
+    //   height: this.state.height,
+    //   weight: this.state.weight,
+    //   category: this.state.category,
+    //   abilities: this.state.abilities,
+    //   pokemonInfo: this.pokemonInfo(),
+    // }
 
     const infoAtribute = this.state.stats.reduce((acum, {key, value}) => {
       const max = 200;
@@ -210,17 +210,9 @@ class PokemonInside extends Component {
 
       return acum;
     }, { sumOfValue: 0, markup: [], });
-    let validPreviousIndex = this.state.pokemonPrevios.id + 1;
-    let validNextIndex = this.state.pokemonNext.id + 1;
 
     let pokemonIndex = (this.state.info.id < 10) ? '00' + this.state.info.id :
                     (this.state.info.id < 100) ? '0' + this.state.info.id : this.state.info.id;
-
-    let indexPreviousPokemon = (validPreviousIndex < 10) ? '00' + validPreviousIndex :
-                    (validPreviousIndex < 100) ? '0' + validPreviousIndex : validPreviousIndex;
-    let indexNextPokemon = (validNextIndex < 10) ? '00' + validNextIndex :
-                    (validNextIndex < 100) ? '0' + validNextIndex : validNextIndex;
-
 
     let finalEvol = this.state.evolution.map((elem, index, evolution) => {
       let type = this.state.evolutionList.map((item) => {
@@ -328,33 +320,8 @@ class PokemonInside extends Component {
     return (
       <div className="wraper">
         <div className="container pokedex">
-          <div className="header">
-            <div className="pokedex-pokemon-pagination">
 
-              <Link to={`/pokemon/${this.state.pokemonPrevios.name}/`} className="previous">
-                <div className="pokedex-pokemon-pagination-wrapper">
-                  <span className="icon icon_arrow_sm_left"></span>
-                  <span className="pokemon-number">#{indexPreviousPokemon}</span>
-                  <span className="pokemon-name" id="pokemon-name">{this.state.pokemonPrevios.name}</span>
-                </div>
-              </Link>
-              <Link to={`/pokemon/${this.state.pokemonNext.name}/`} className="next">
-                <div className="pokedex-pokemon-pagination-wrapper">
-                  <span className="icon icon_arrow_sm_right"></span>
-                  <span className="pokemon-number">#{indexNextPokemon}</span>
-                  <span className="pokemon-name" id="pokemon-name">{this.state.pokemonNext.name}</span>
-                </div>
-              </Link>
-            </div>
-
-            <div className="pokedex-pokemon-pagination-title">
-              <div className="title-text">
-                <span>{this.state.info.name}</span>
-                <span>#{pokemonIndex}</span>
-              </div>
-            </div>
-
-          </div>
+          <PreviousAndNextPokemon key={this.props.match.params.name} state={this.state} />
 
           <div className="section pokedex-pokemon-details">
 
@@ -397,68 +364,7 @@ class PokemonInside extends Component {
               </div>
             </div>
 
-            <div className="right-content">
-              <div className="discription">
-                <span>{this.state.discriptionText}</span>
-                <div className="versions-menu">
-                  <span>Version: </span>
-                  <select onChange={this.getVersionPokemon} name="selectBtn1" id="selectBtn1">
-                    {version}
-                  </select>
-                </div>
-              </div>
-
-              <div className="version">
-              </div>
-              <div className="pokemon-ability-info">
-                <div className="ability-info-left">
-                  <ul>
-                    <li>
-                      <span className="atribute-title">Height</span>
-                      <span className="atribute-value">{option.height}'</span>
-                    </li>
-                    <li>
-                      <span className="atribute-title">Weight</span>
-                      <span className="atribute-value">{option.weight} lbs</span>
-                    </li>
-                    <li>
-                      <span className="atribute-title">Gender</span>
-                      <span className="atribute-value">
-                        <i className="icon icon_male_symbol"></i>
-                        <i className="icon icon_female_symbol"></i>
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="ability-info-right">
-                  <ul>
-                    <li>
-                      <span className="atribute-title">Category</span>
-                      <span className="atribute-value">{option.category}</span>
-                    </li>
-                    <li>
-                      <span className="atribute-title">Abilities</span>
-                      <span className="atribute-value">{option.abilities}</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="pokemon-type-info">
-                <div className="type-list">
-                  <div className="type-text">
-                    <h3>Type</h3>
-                  </div>
-                  {this.state.type}
-                </div>
-                {/* <div className="weaknesses">
-                  <div className="weaknesses-text">
-                    <h3>Weaknesses</h3>
-                  </div>
-                  {this.state.type}
-                </div> */}
-              </div>
-            </div>
+            <Discription key={this.props.match.params.name} pokemonInfo={this.state} />
           </div>
 
           <div className="pokemon-evolution">
