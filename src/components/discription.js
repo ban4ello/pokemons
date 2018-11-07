@@ -7,11 +7,11 @@ import Type from '../type.js';
 export default class Discription extends Component {
   constructor (props) {
     super(props);
-    // console.log(props);
-    // console.log(this.props.pokemonInfo.discriptionText);
+    console.log(props);
     this.state = {
-      discriptionText: props.pokemonInfo.discriptionText,
+      discriptionText: '',
       discription: props.pokemonInfo.discription,
+      // discriptionList: props.pokemonInfo.discriptionList,
     };
     this.getVersionPokemon = this.getVersionPokemon.bind(this);
   };
@@ -19,7 +19,7 @@ export default class Discription extends Component {
   componentDidUpdate (prevProps) {
     if (prevProps.pokemonInfo.discription !== this.props.pokemonInfo.discription) {
       this.setState({
-        discriptionText: this.props.pokemonInfo.discriptionText,
+        discriptionText: this.props.pokemonInfo.discription[0].text,
         discription: this.props.pokemonInfo.discription,
       });
     }
@@ -48,7 +48,6 @@ export default class Discription extends Component {
     });
     return typesList;
   }
-
 
   render() {
     const version = this.props.pokemonInfo.discription.map((elem, index) => {

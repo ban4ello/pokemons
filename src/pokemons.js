@@ -47,7 +47,7 @@ class Pokemons extends Component {
   }
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     const pokemonList = this.props.pokemons.map((pokemon) => {
       return <Pokemon key={pokemon.id} pokemon={pokemon} />
     });

@@ -27,9 +27,18 @@ export const getPokemonsAction = () => {
 }
 
 export const getAdditionalAction = (data) => {
+  // console.log(data);
+  
+  let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
+    return {text: flavor_text, language: language.name, version: version.name, };
+  });
+  let sortList = discriptionList.filter((elem) => {
+    return elem.language == 'en';
+  });
   const newData = {
-      discriptionList: data.flavor_text_entries,
+      discriptionList: sortList,
       category: data.genera[2].genus,
+      url: data.evolution_chain.url,
     };
 
   return {

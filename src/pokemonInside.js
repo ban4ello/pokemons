@@ -24,6 +24,7 @@ class PokemonInside extends Component {
       pokemonPrevios: {},
       pokemonNext: {},
       discriptionText: '',
+      discriptionList: [],
       height: '',
       weight: '',
       category: '',
@@ -32,9 +33,6 @@ class PokemonInside extends Component {
       evolutionList: [],
       id: '',
      };
-    // this.getPokemonInfo = this.getPokemonInfo.bind(this);
-    // this.getPokemonsList = this.getPokemonsList.bind(this);
-    // this.getVersionPokemon = this.getVersionPokemon.bind(this);
   };
 
   componentDidMount() {
@@ -50,56 +48,50 @@ class PokemonInside extends Component {
   fetchAllData () {
     const pokemon = this.props.pokemons.find(({ name }) => name === this.props.match.params.name);
     console.log(pokemon);
-    // this.props.getAdditionalAction();
+    console.log(this.props.additionData);
+
     if (pokemon) {
-      this.setState({
-        info: pokemon,
-        stats: this.getAtributes(pokemon),
-        height: pokemon.height,
-        weight: this.getOptions(pokemon).weight,
-        abilities: pokemon.abilities[0],
-        id: pokemon.id,
-        type: this.getType(pokemon),
-      });
-
-      this.getPokemonsList(pokemon.id);
-
-    } else {
+      this.basicData(pokemon);
+      this.getPreviousAndNextPokemon(pokemon.id);
+    }
+    else {
       getPokemon(this.props.match.params.name)
         .then(data => {
-          console.log(data);
-          // this.props.pokemonsSuccessAction({data: data} );
-          this.setState({
-            info: data,
-            stats: this.getAtributes(data),
-            height: data.height,
-            weight: this.getOptions(data).weight,
-            abilities: data.abilities[0],
-            id: data.id,
-            type: this.getType(data),
-          });
+          // console.log(data);
 
-          this.getPokemonsList(data.id);
+          this.basicData (data);
+
+          this.getPreviousAndNextPokemon(data.id);
 
           return data.id;
         });
     }
     this.getDiscriptionPokemon().then((elem) => {
       this.evolution(elem);
-      console.log(elem);
-      // this.props.getAdditionalAction(elem);
     });
 
   };
 
-  // getNextPokemons () {
-  //   const to = this.props.currentIndex + this.state.step;
-  //   return getPokemons(this.props.currentIndex + 1, to)
-  //     .then(pokemonsList => {
-  //       console.log(pokemonsList.pokemons);
-  //       this.props.pokemonsSuccessAction({data: pokemonsList, to} );
-  //     });
-  // };
+  basicData (data) {
+
+    this.setState({
+      info: data,
+      stats: this.getAtributes(data),
+      height: data.height,
+      weight: this.getOptions(data).weight,
+      abilities: data.abilities[0],
+      id: data.id,
+      type: this.getType(data),
+    });
+  }
+
+getAdditionData () {
+  this.setState({
+    category: this.props.additionData.category,
+    discription: this.props.additionData.discriptionList,
+    chainUrl: this.props.additionData.url,
+  });
+}
 
   evolutionPokemonList (data) {
     return getPokemonInfoEvol(data)
@@ -120,42 +112,33 @@ class PokemonInside extends Component {
     });
   }
 
-  // getAdditionalInfo () {
-  //   return getPokemonSpeciesByName(this.props.match.params.name)
-  //   .then(data => {
-  //     console.log(data);
-  //     this.props.getAdditionalAction(data);
-  //
-  //   })
-  // }
-
   getDiscriptionPokemon () {
     return getPokemonSpeciesByName(this.props.match.params.name)
       .then(data => {
-        console.log(data);
-        // this.props.getAdditionalAction(data);
+        // console.log(data);
+        this.props.getAdditionalAction(data);
 
-        let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
-          return {text: flavor_text, language: language.name, version: version.name, };
-        });
-        let sortList = discriptionList.filter((elem) => {
-          return elem.language == 'en';
-        });
-        let category = data.genera[2].genus;
-        this.setState({
-          discription: sortList,
-          discriptionText: sortList[0].text,
-          category: category,
-        });
+        // let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
+        //   return {text: flavor_text, language: language.name, version: version.name, };
+        // });
+        // let sortList = discriptionList.filter((elem) => {
+        //   return elem.language == 'en';
+        // });
+        // let category = data.genera[2].genus;
+        // this.setState({
+          // discription: sortList,
+          // discriptionText: sortList[0].text,
+          // category: category,
+        // });
 
         return {
-          sortList: sortList,
+          // sortList: sortList,
           url: data.evolution_chain.url,
         }
       });
   };
 
-  getPokemonsList(pokemonIndex) {
+  getPreviousAndNextPokemon(pokemonIndex) {
     return getPokemonSpecies()
       .then(data => {
         const pokemonsLength = data.results.length;
@@ -201,6 +184,9 @@ class PokemonInside extends Component {
   }
 
   render() {
+
+    // console.log(this.state);
+
     const previosNextPokemon = {
       pokemonPrevios: this.state.pokemonPrevios,
       pokemonNext: this.state.pokemonNext,
@@ -210,109 +196,6 @@ class PokemonInside extends Component {
 
     let pokemonIndex = (this.state.info.id < 10) ? '00' + this.state.info.id :
                     (this.state.info.id < 100) ? '0' + this.state.info.id : this.state.info.id;
-
-    // let finalEvol = this.state.evolution.map((elem, index, evolution) => {
-    //   let type = this.state.evolutionList.map((item) => {
-    //     return this.getType(item);
-    //   });
-    //   let indexEvol = this.state.evolutionList.map((item) => {
-    //     let pokemonIndex = (item.id < 10) ? '00' + item.id :
-    //     (item.id < 100) ? '0' + item.id : item.id;
-    //     return pokemonIndex;
-    //   })
-    //
-    //   let onlyFirstLevel = evolution.filter((elem) => {
-    //     return elem.level == '1';
-    //   });
-    //   let onlySecondLevel = evolution.filter((elem) => {
-    //     return elem.level == '2';
-    //   });
-    //   let onlyThirdLevel = evolution.filter((elem) => {
-    //     return elem.level == '3';
-    //   });
-    //
-    //   if (evolution.length == 1) {
-    //     return (
-    //       <div key={index} className={'onePokemon'}>
-    //         <p>This Pokémon does not evolve.</p>
-    //       <div className={'homeless'}>
-    //         <Link to={`/pokemon/${elem.name}/`}>
-    //           <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-    //           <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-    //           {type[index]}
-    //         </Link>
-    //       </div>
-    //     </div>
-    //     );
-    //   }
-    //   if (onlySecondLevel.length == 1 && onlyThirdLevel.length == 0) {
-    //     return (
-    //       <div key={index} className={'onlyTwoPokemon'}>
-    //       <div className={'level' + elem.level}>
-    //         <Link to={`/pokemon/${elem.name}/`}>
-    //           <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-    //           <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-    //           {type[index]}
-    //         </Link>
-    //         <ul>
-    //           <li></li>
-    //         </ul>
-    //       </div>
-    //     </div>
-    //     );
-    //   }
-    //
-    //   if (onlySecondLevel.length > 2 && onlyThirdLevel.length == 0) {
-    //     console.log('how EEVEE');
-    //     return (
-    //       <div key={index} className={'eevee'}>
-    //         <div className={'blok' + elem.level}>
-    //           <div className={'level' + elem.level}>
-    //             <Link to={`/pokemon/${elem.name}/`}>
-    //               <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-    //               <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-    //               {type[index]}
-    //             </Link>
-    //             <ul>
-    //               <li></li>
-    //             </ul>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     );
-    //   }
-    //   if (onlySecondLevel.length == 2) {
-    //     console.log('ok');
-    //     return (
-    //       <div key={index} className={'onlyTwoLevel2'}>
-    //           <div className={'level' + elem.level}>
-    //             <Link to={`/pokemon/${elem.name}/`}>
-    //               <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-    //               <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-    //               {type[index]}
-    //             </Link>
-    //             <ul>
-    //               <li></li>
-    //             </ul>
-    //           </div>
-    //       </div>
-    //     );
-    //   }
-    //   return (
-    //     <div className={'threeEvol'} key={index}>
-    //       <div className={'level' + elem.level}>
-    //         <Link to={`/pokemon/${elem.name}/`}>
-    //           <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-    //           <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-    //           {type[index]}
-    //         </Link>
-    //         <ul>
-    //           <li></li>
-    //         </ul>
-    //       </div>
-    //     </div>
-    //   );
-    // })
 
     return (
       <div className="wraper">
@@ -369,14 +252,12 @@ class PokemonInside extends Component {
   }
   }
 
-// export default PokemonInside;
 export default connect(
   (state) => {
-    // console.log(state);
     const { pokemonsList } = state;
 
     return {
-      // test: 'test',
+      additionData: pokemonsList.additionData,
       pokemons: pokemonsList.pokemons,
     };
   },
