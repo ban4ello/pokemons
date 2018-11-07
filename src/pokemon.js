@@ -23,9 +23,7 @@ class Pokemon extends Component {
 
   render() {
     const pokemon = this.props.pokemon;
-    pokemon.index = (this.props.pokemon.id < 10) ? '00' + this.props.pokemon.id :
-                    (this.props.pokemon.id < 100) ? '0' + this.props.pokemon.id : this.props.pokemon.id;
-
+  
     const pokemonName = this.props.pokemon.name;
     const pokemonId = this.props.pokemon.id;
     const typesList = pokemon.types.map((type, index) => {

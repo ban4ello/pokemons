@@ -1,36 +1,36 @@
 const getInitialState = () => {
   return {
-   loading: false,
-   pokemons: [],
-   currentIndex: 0,
-   error: null,
+    discription: [],
+    info: [],
+    stats: [],
+    pokemonPrevios: {},
+    pokemonNext: {},
+    discriptionText: '',
+    height: '',
+    weight: '',
+    category: '',
+    abilities: '',
+    evolution: [],
+    evolutionList: [],
+    id: '',
   };
 }
 
 const pokemonsList = (state = getInitialState(), action) => {
        switch (action.type) {
-         case 'GET_POKEMONS':
-          return Object.assign({}, state, {
-            loading: true,
-          });
-
-         case 'GET_POKEMONS_SUCCESS':
-           return Object.assign({}, state, {
-             pokemons: [...state.pokemons, ...action.payload.data],
-             currentIndex: action.payload.to,
-             loading: false,
-           });
-
-         case 'GET_POKEMONS_ERROR':
-           return Object.assign({}, state, {
-             error: action.payload,
-             loading: false,
-           });
+         // case 'GET_POKEMONS_INSIDE':
+         //  return Object.assign({}, state);
 
          case 'GET_ADDITIONAL_INFO':
            return Object.assign({}, state, {
-             pokemons: [...state.pokemons, ...action.payload.data],
+             pokemons: [...state.pokemons, ...action.payload.additInfo],
            });
+
+         // case 'GET_POKEMONS_INSIDE_ERROR':
+         //   return Object.assign({}, state, {
+         //     error: action.payload,
+         //     // loading: false,
+         //   });
 
          default:
            return state;

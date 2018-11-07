@@ -51,22 +51,17 @@ export default class Discription extends Component {
 
 
   render() {
-    console.log(this.props);
-    console.log(this.props.pokemonInfo);
-    // let type = this.props.pokemonInfo.map((item) => {
-      // return this.getType(item);
-    // });
-
     const version = this.props.pokemonInfo.discription.map((elem, index) => {
       return <option key={index} value={index}>{elem.version}</option>;
-    })
+    });
+
     let option = {
-      abilities: this.props.pokemonInfo.abilities[0],
+      abilities: this.props.pokemonInfo.abilities.ability.name,
       weight: this.props.pokemonInfo.weight,
       height: this.state.height,
       category: this.props.pokemonInfo.category,
       height: this.props.pokemonInfo.height,
-      // type: type,
+      type: this.props.pokemonInfo.type,
     };
 
     return (
@@ -122,7 +117,7 @@ export default class Discription extends Component {
             <div className="type-text">
               <h3>Type</h3>
             </div>
-            {this.state.type}
+            {option.type}
           </div>
           {/* <div className="weaknesses">
             <div className="weaknesses-text">

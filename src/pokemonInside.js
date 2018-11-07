@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import  './style/insidePokemon.scss';
 import Pokemon from './pokemon.js';
 import Type from './type.js';
-import {GetPokemon} from './get-pokemons.js';
-import {getPokemon, getPokemonSpecies, getPokemonSpeciesByName} from './components/fetch.js';
+// import {GetPokemon} from './get-pokemons.js';
+import {getPokemon, getPokemonSpecies, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol, } from './components/fetch.js';
+import { pokemonsInsideAction, getPokemonInsideAction, insidePokemonsSuccessAction } from "./actions/create-actions";
 import PreviousAndNextPokemon from './components/previousAndNextPokemon.js';
+import Stats from './components/stats_info.js';
 import Discription from './components/discription.js';
-import {GetEvolution, GetPokemonInfoEvol} from './evolutions/get-evolution.js';
-import  './style/insidePokemon.scss';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import Evolution from './components/evolution.js';
+import { connect } from "react-redux";
+import { getPokemonsAction, pokemonsSuccessAction, getAdditionalAction } from "./actions/create-actions";
 
 class PokemonInside extends Component {
   constructor (props) {
     super(props);
-    console.log(props);
+    // console.log(props);
     this.state = {
       discription: [],
       info: [],
@@ -23,9 +27,10 @@ class PokemonInside extends Component {
       height: '',
       weight: '',
       category: '',
-      abilities: '',
+      abilities: { ability: {} },
       evolution: [],
       evolutionList: [],
+      id: '',
      };
     // this.getPokemonInfo = this.getPokemonInfo.bind(this);
     // this.getPokemonsList = this.getPokemonsList.bind(this);
@@ -43,48 +48,61 @@ class PokemonInside extends Component {
   };
 
   fetchAllData () {
-    getPokemon(this.props.match.params.name)
-      .then(data => {
-        console.log(data);
-        this.setState({
-          info: data,
-          stats: this.getAtributes(data),
-          height: data.height,
-          weight: this.getOptions(data).weight,
-          abilities: data.abilities[0],
-          id: data.id,
-          type: this.getType(data),
-        });
-
-        this.getPokemonsList(data.id);
-
-        return data.id;
+    const pokemon = this.props.pokemons.find(({ name }) => name === this.props.match.params.name);
+    console.log(pokemon);
+    // this.props.getAdditionalAction();
+    if (pokemon) {
+      this.setState({
+        info: pokemon,
+        stats: this.getAtributes(pokemon),
+        height: pokemon.height,
+        weight: this.getOptions(pokemon).weight,
+        abilities: pokemon.abilities[0],
+        id: pokemon.id,
+        type: this.getType(pokemon),
       });
+
+      this.getPokemonsList(pokemon.id);
+
+    } else {
+      getPokemon(this.props.match.params.name)
+        .then(data => {
+          console.log(data);
+          // this.props.pokemonsSuccessAction({data: data} );
+          this.setState({
+            info: data,
+            stats: this.getAtributes(data),
+            height: data.height,
+            weight: this.getOptions(data).weight,
+            abilities: data.abilities[0],
+            id: data.id,
+            type: this.getType(data),
+          });
+
+          this.getPokemonsList(data.id);
+
+          return data.id;
+        });
+    }
     this.getDiscriptionPokemon().then((elem) => {
-      // this.evolution(elem);
+      this.evolution(elem);
+      console.log(elem);
+      // this.props.getAdditionalAction(elem);
     });
 
   };
 
-  // pokemonInfo(name) {
-  //   return fetch(`https://pokeapi.co/api/v2${name}`).then(
-  //     function(response) {
-  //       if (response.status !== 200) {
-  //         console.log('Looks like there was a problem. Status Code: ' + response.status);
-  //
-  //         return;
-  //       }
-  //       return response.json().then(function(data) {
-  //         return data;
-  //       });
-  //     }
-  //   )
-  //   .catch(function(err) {
-  //     console.log('Fetch Error :-S', err);
-  //   });
-  // }
+  // getNextPokemons () {
+  //   const to = this.props.currentIndex + this.state.step;
+  //   return getPokemons(this.props.currentIndex + 1, to)
+  //     .then(pokemonsList => {
+  //       console.log(pokemonsList.pokemons);
+  //       this.props.pokemonsSuccessAction({data: pokemonsList, to} );
+  //     });
+  // };
+
   evolutionPokemonList (data) {
-    return GetPokemonInfoEvol(data)
+    return getPokemonInfoEvol(data)
       .then(pokemonsList => {
         this.setState({
           evolutionList: pokemonsList,
@@ -93,7 +111,7 @@ class PokemonInside extends Component {
   }
 
   evolution (elem) {
-    return GetEvolution(elem.url)
+    return getEvolution(elem.url)
     .then(data => {
       this.evolutionPokemonList(data);
       this.setState({
@@ -102,9 +120,21 @@ class PokemonInside extends Component {
     });
   }
 
+  // getAdditionalInfo () {
+  //   return getPokemonSpeciesByName(this.props.match.params.name)
+  //   .then(data => {
+  //     console.log(data);
+  //     this.props.getAdditionalAction(data);
+  //
+  //   })
+  // }
+
   getDiscriptionPokemon () {
     return getPokemonSpeciesByName(this.props.match.params.name)
       .then(data => {
+        console.log(data);
+        // this.props.getAdditionalAction(data);
+
         let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
           return {text: flavor_text, language: language.name, version: version.name, };
         });
@@ -124,19 +154,6 @@ class PokemonInside extends Component {
         }
       });
   };
-  //
-  // getVersionPokemon (e) {
-  //   if (!e) return;
-  //
-  //   const target = e.target || e.srcElement;
-  //   const currentOption = this.state.discription[target.value];
-  //
-  //   if (!currentOption) return;
-  //
-  //   this.setState({
-  //     discriptionText: currentOption.text
-  //   });
-  // };
 
   getPokemonsList(pokemonIndex) {
     return getPokemonSpecies()
@@ -184,144 +201,124 @@ class PokemonInside extends Component {
   }
 
   render() {
-    console.log(this.state);
-    // const info = {
-    //   discription: this.state.discription,
-    //   discriptionText: this.state.discriptionText,
-    //   type: this.state.type,
-    //   height: this.state.height,
-    //   weight: this.state.weight,
-    //   category: this.state.category,
-    //   abilities: this.state.abilities,
-    //   pokemonInfo: this.pokemonInfo(),
-    // }
-
-    const infoAtribute = this.state.stats.reduce((acum, {key, value}) => {
-      const max = 200;
-      const correctValue = 100 - value * 100 / max;
-      acum.sumOfValue += value
-
-      acum.markup.push( <div key={key} className="first">
-                          <div className="inside">
-                            <div className="inside-white" style={{height: `${correctValue}%`}}></div>
-                          </div>
-                          <span>{key}</span>
-                        </div>)
-
-      return acum;
-    }, { sumOfValue: 0, markup: [], });
+    const previosNextPokemon = {
+      pokemonPrevios: this.state.pokemonPrevios,
+      pokemonNext: this.state.pokemonNext,
+      id: this.state.id,
+      name: this.state.info.name,
+    }
 
     let pokemonIndex = (this.state.info.id < 10) ? '00' + this.state.info.id :
                     (this.state.info.id < 100) ? '0' + this.state.info.id : this.state.info.id;
 
-    let finalEvol = this.state.evolution.map((elem, index, evolution) => {
-      let type = this.state.evolutionList.map((item) => {
-        return this.getType(item);
-      });
-      let indexEvol = this.state.evolutionList.map((item) => {
-        let pokemonIndex = (item.id < 10) ? '00' + item.id :
-        (item.id < 100) ? '0' + item.id : item.id;
-        return pokemonIndex;
-      })
-
-      let onlyFirstLevel = evolution.filter((elem) => {
-        return elem.level == '1';
-      });
-      let onlySecondLevel = evolution.filter((elem) => {
-        return elem.level == '2';
-      });
-      let onlyThirdLevel = evolution.filter((elem) => {
-        return elem.level == '3';
-      });
-
-      if (evolution.length == 1) {
-        return (
-          <div key={index} className={'onePokemon'}>
-            <p>This Pokémon does not evolve.</p>
-          <div className={'homeless'}>
-            <Link to={`/pokemon/${elem.name}/`}>
-              <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-              <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-              {type[index]}
-            </Link>
-          </div>
-        </div>
-        );
-      }
-      if (onlySecondLevel.length == 1 && onlyThirdLevel.length == 0) {
-        return (
-          <div key={index} className={'onlyTwoPokemon'}>
-          <div className={'level' + elem.level}>
-            <Link to={`/pokemon/${elem.name}/`}>
-              <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-              <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-              {type[index]}
-            </Link>
-            <ul>
-              <li></li>
-            </ul>
-          </div>
-        </div>
-        );
-      }
-
-      if (onlySecondLevel.length > 2 && onlyThirdLevel.length == 0) {
-        console.log('how EEVEE');
-        return (
-          <div key={index} className={'eevee'}>
-            <div className={'blok' + elem.level}>
-              <div className={'level' + elem.level}>
-                <Link to={`/pokemon/${elem.name}/`}>
-                  <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-                  <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-                  {type[index]}
-                </Link>
-                <ul>
-                  <li></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      if (onlySecondLevel.length == 2) {
-        console.log('ok');
-        return (
-          <div key={index} className={'onlyTwoLevel2'}>
-              <div className={'level' + elem.level}>
-                <Link to={`/pokemon/${elem.name}/`}>
-                  <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-                  <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-                  {type[index]}
-                </Link>
-                <ul>
-                  <li></li>
-                </ul>
-              </div>
-          </div>
-        );
-      }
-      return (
-        <div className={'threeEvol'} key={index}>
-          <div className={'level' + elem.level}>
-            <Link to={`/pokemon/${elem.name}/`}>
-              <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
-              <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
-              {type[index]}
-            </Link>
-            <ul>
-              <li></li>
-            </ul>
-          </div>
-        </div>
-      );
-    })
+    // let finalEvol = this.state.evolution.map((elem, index, evolution) => {
+    //   let type = this.state.evolutionList.map((item) => {
+    //     return this.getType(item);
+    //   });
+    //   let indexEvol = this.state.evolutionList.map((item) => {
+    //     let pokemonIndex = (item.id < 10) ? '00' + item.id :
+    //     (item.id < 100) ? '0' + item.id : item.id;
+    //     return pokemonIndex;
+    //   })
+    //
+    //   let onlyFirstLevel = evolution.filter((elem) => {
+    //     return elem.level == '1';
+    //   });
+    //   let onlySecondLevel = evolution.filter((elem) => {
+    //     return elem.level == '2';
+    //   });
+    //   let onlyThirdLevel = evolution.filter((elem) => {
+    //     return elem.level == '3';
+    //   });
+    //
+    //   if (evolution.length == 1) {
+    //     return (
+    //       <div key={index} className={'onePokemon'}>
+    //         <p>This Pokémon does not evolve.</p>
+    //       <div className={'homeless'}>
+    //         <Link to={`/pokemon/${elem.name}/`}>
+    //           <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+    //           <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+    //           {type[index]}
+    //         </Link>
+    //       </div>
+    //     </div>
+    //     );
+    //   }
+    //   if (onlySecondLevel.length == 1 && onlyThirdLevel.length == 0) {
+    //     return (
+    //       <div key={index} className={'onlyTwoPokemon'}>
+    //       <div className={'level' + elem.level}>
+    //         <Link to={`/pokemon/${elem.name}/`}>
+    //           <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+    //           <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+    //           {type[index]}
+    //         </Link>
+    //         <ul>
+    //           <li></li>
+    //         </ul>
+    //       </div>
+    //     </div>
+    //     );
+    //   }
+    //
+    //   if (onlySecondLevel.length > 2 && onlyThirdLevel.length == 0) {
+    //     console.log('how EEVEE');
+    //     return (
+    //       <div key={index} className={'eevee'}>
+    //         <div className={'blok' + elem.level}>
+    //           <div className={'level' + elem.level}>
+    //             <Link to={`/pokemon/${elem.name}/`}>
+    //               <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+    //               <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+    //               {type[index]}
+    //             </Link>
+    //             <ul>
+    //               <li></li>
+    //             </ul>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     );
+    //   }
+    //   if (onlySecondLevel.length == 2) {
+    //     console.log('ok');
+    //     return (
+    //       <div key={index} className={'onlyTwoLevel2'}>
+    //           <div className={'level' + elem.level}>
+    //             <Link to={`/pokemon/${elem.name}/`}>
+    //               <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+    //               <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+    //               {type[index]}
+    //             </Link>
+    //             <ul>
+    //               <li></li>
+    //             </ul>
+    //           </div>
+    //       </div>
+    //     );
+    //   }
+    //   return (
+    //     <div className={'threeEvol'} key={index}>
+    //       <div className={'level' + elem.level}>
+    //         <Link to={`/pokemon/${elem.name}/`}>
+    //           <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${indexEvol[index]}.png`} className="imgFooter" alt="pokemon"></img>
+    //           <h3>{elem.name}<span> #{indexEvol[index]}</span></h3>
+    //           {type[index]}
+    //         </Link>
+    //         <ul>
+    //           <li></li>
+    //         </ul>
+    //       </div>
+    //     </div>
+    //   );
+    // })
 
     return (
       <div className="wraper">
         <div className="container pokedex">
 
-          <PreviousAndNextPokemon key={this.props.match.params.name} state={this.state} />
+          <PreviousAndNextPokemon key={this.state.id} pokemon={previosNextPokemon} />
 
           <div className="section pokedex-pokemon-details">
 
@@ -358,21 +355,13 @@ class PokemonInside extends Component {
 
               </div>
 
-              <div className="pokemon-stats-info">
-                <span className="sumAtribute">Sum of all attributes : {this.state.stats.length ? (infoAtribute.sumOfValue / this.state.stats.length).toFixed(0) : 0}</span>
-                {infoAtribute.markup}
-              </div>
+              <Stats key={this.props.match.params.name} statsInfo={this.state.stats} />
             </div>
 
             <Discription key={this.props.match.params.name} pokemonInfo={this.state} />
           </div>
 
-          <div className="pokemon-evolution">
-            <h2>Evolutions</h2>
-            <div className="evolution-profile">
-              {finalEvol}
-            </div>
-          </div>
+          <Evolution key={this.props.match.params.name} evolutionInfo={this.state} />
 
         </div>
       </div>
@@ -380,4 +369,16 @@ class PokemonInside extends Component {
   }
   }
 
-export default PokemonInside;
+// export default PokemonInside;
+export default connect(
+  (state) => {
+    // console.log(state);
+    const { pokemonsList } = state;
+
+    return {
+      // test: 'test',
+      pokemons: pokemonsList.pokemons,
+    };
+  },
+  { getAdditionalAction }
+)(PokemonInside);

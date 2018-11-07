@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Pokemon from './pokemon.js';
-import {GetPokemons, GetPokemon} from './get-pokemons.js';
+// import {getPokemons, GetPokemon} from './get-pokemons.js';
+import {getPokemon, getPokemons, getPokemonSpecies, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol, } from './components/fetch.js';
 import  './style/main.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -15,16 +16,19 @@ class Pokemons extends Component {
   };
 
   componentDidMount() {
-    this.getNextPokemons();
-
+    if (this.props.pokemons.length == 0) {
+     this.getNextPokemons();
+   }
   };
+
 
   getNextPokemons () {
     this.props.getPokemonsAction();
 
     const to = this.props.currentIndex + this.state.step;
-    return GetPokemons(this.props.currentIndex + 1, to)
+    return getPokemons(this.props.currentIndex + 1, to)
       .then(pokemonsList => {
+
         this.props.pokemonsSuccessAction({data: pokemonsList, to} );
       });
   };
@@ -43,6 +47,7 @@ class Pokemons extends Component {
   }
 
   render() {
+    console.log(this.state);
     const pokemonList = this.props.pokemons.map((pokemon) => {
       return <Pokemon key={pokemon.id} pokemon={pokemon} />
     });
@@ -66,9 +71,10 @@ class Pokemons extends Component {
   }
   }
 ;
-// export default Pokemons
+
 export default connect(
   (state) => {
+    console.log(state);
     const { pokemonsList } = state;
 
     return {

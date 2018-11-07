@@ -1,0 +1,140 @@
+.right-content .version h3 {
+  color: #212121;
+  float: left;
+  font-size: 112.5%;
+  line-height: 150%;
+  margin: 1.125em 0 2em;
+  font-weight: normal;
+}
+
+.discription span {
+  color: #212121;
+  font-size: 112.5%;
+  line-height: 150%;
+}
+.version {
+  display: inline-block;
+}
+.version-left .icon_pokeball {
+  color: #dd2d51;
+  font-size: 30px;
+}
+.version-right .icon_pokeball {
+  color: #0072b0;
+  font-size: 30px;
+}
+
+.version-label {
+  border-color: #fff;
+  border-style: solid;
+  border-width: 4px;
+  border-radius: 32px;
+  cursor: pointer;
+  float: left;
+  font-size: 112.5%;
+  height: 32px;
+  line-height: 32px;
+  margin: 0.75em 0 0.75em 0.5em;
+  text-align: center;
+}
+
+.pokemon-ability-info {
+  min-height: 243px;
+  border-radius: 10px;
+  display: inline-block;
+  float: left;
+  min-height: 100px;
+  position: relative;
+  width: 100%;
+  background-color: #30a7d7;
+  color: #fff;
+}
+
+.pokemon-ability-info .ability-info-left {
+  float: left;
+  margin-right: -100%;
+  width: 49.22%;
+  margin-bottom: 20px;
+}
+
+.pokemon-ability-info .ability-info-right {
+  float: left;
+  margin-right: -100%;
+  width: 49.22%;
+  margin-left: 50.7825%;
+}
+
+.atribute-title {
+  clear: both;
+  color: #fff;
+  float: left;
+  font-size: 100%;
+  margin: 1.25em 0 0 1.25em;
+  text-transform: none;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.atribute-value {
+  clear: both;
+  color: #212121;
+  float: left;
+  font-size: 125%;
+  margin: 0.75em 0 0 1em;
+  white-space: normal;
+  word-break: break-word;
+}
+.pokemon-type-info  {
+  border-radius: 10px;
+  display: block;
+  float: left;
+  height: 265px;
+  width: 100%;
+  color: #fff;
+}
+
+.pokemon-type-info .type {
+  border-radius: 3px;
+  width: 140px;
+  height: 35px;
+  margin: 20px 10px 0 0px;
+  line-height: 18px;
+  display: inline-block;
+  text-align: center;
+}
+
+.pokemon-type-info .type-text h3 {
+  color: #212121;
+  width: 100%;
+  margin: 0;
+  padding-top: 20px;
+  font-weight: normal;
+  font-size: 125%;
+}
+
+.pokemon-type-info .type p {
+  margin: 0;
+  padding-top: 8px;
+}
+
+.weaknesses {
+  height: 200px;
+}
+
+.weaknesses-text h3 {
+  color: #212121;
+  width: 100%;
+  margin: 0;
+  padding-top: 20px;
+  font-weight: normal;
+  font-size: 125%;
+}
+
+.versions-menu {
+  width: 110px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}

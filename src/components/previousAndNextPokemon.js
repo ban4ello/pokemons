@@ -6,16 +6,15 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 export default class PreviousAndNextPokemon extends Component {
   constructor (props) {
     super(props);
-    console.log(props.state);
   };
 
   render() {
     // console.log(this.props);
-    let validPreviousIndex = this.props.state.pokemonPrevios.id + 1;
-    let validNextIndex = this.props.state.pokemonNext.id + 1;
+    let validPreviousIndex = this.props.pokemon.pokemonPrevios.id + 1;
+    let validNextIndex = this.props.pokemon.pokemonNext.id + 1;
 
-    let pokemonIndex = (this.props.state.info.id < 10) ? '00' + this.props.state.info.id :
-                    (this.props.state.info.id < 100) ? '0' + this.props.state.info.id : this.props.state.info.id;
+    let pokemonIndex = (this.props.pokemon.id < 10) ? '00' + this.props.pokemon.id :
+                    (this.props.pokemon.id < 100) ? '0' + this.props.pokemon.id : this.props.pokemon.id;
 
     let indexPreviousPokemon = (validPreviousIndex < 10) ? '00' + validPreviousIndex :
                     (validPreviousIndex < 100) ? '0' + validPreviousIndex : validPreviousIndex;
@@ -26,25 +25,25 @@ export default class PreviousAndNextPokemon extends Component {
       <div className="header">
         <div className="pokedex-pokemon-pagination">
 
-          <Link to={`/pokemon/${this.props.state.pokemonPrevios.name}/`} className="previous">
+          <Link to={`/pokemon/${this.props.pokemon.pokemonPrevios.name}/`} className="previous">
             <div className="pokedex-pokemon-pagination-wrapper">
               <span className="icon icon_arrow_sm_left"></span>
               <span className="pokemon-number">#{indexPreviousPokemon}</span>
-              <span className="pokemon-name" id="pokemon-name">{this.props.state.pokemonPrevios.name}</span>
+              <span className="pokemon-name" id="pokemon-name">{this.props.pokemon.pokemonPrevios.name}</span>
             </div>
           </Link>
-          <Link to={`/pokemon/${this.props.state.pokemonNext.name}/`} className="next">
+          <Link to={`/pokemon/${this.props.pokemon.pokemonNext.name}/`} className="next">
             <div className="pokedex-pokemon-pagination-wrapper">
               <span className="icon icon_arrow_sm_right"></span>
               <span className="pokemon-number">#{indexNextPokemon}</span>
-              <span className="pokemon-name" id="pokemon-name">{this.props.state.pokemonNext.name}</span>
+              <span className="pokemon-name" id="pokemon-name">{this.props.pokemon.pokemonNext.name}</span>
             </div>
           </Link>
         </div>
 
         <div className="pokedex-pokemon-pagination-title">
           <div className="title-text">
-            <span>{this.props.state.info.name}</span>
+            <span>{this.props.pokemon.name}</span>
             <span>#{pokemonIndex}</span>
           </div>
         </div>
