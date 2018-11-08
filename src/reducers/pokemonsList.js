@@ -4,7 +4,8 @@ const getInitialState = () => {
    pokemons: [],
    currentIndex: 0,
    error: null,
-   additionData: {},
+   // additionData: {},
+   allPokemon: [],
   };
 }
 
@@ -30,6 +31,7 @@ const pokemonsList = (state = getInitialState(), action) => {
 
          case 'GET_ADDITIONAL_INFO':
             const pokemons = state.pokemons.slice(0);
+            // console.log(action.payload.data);
             const pokemon = pokemons.find(({ name }) => name === action.payload.data.name);
 
             if (pokemon) {
@@ -38,6 +40,12 @@ const pokemonsList = (state = getInitialState(), action) => {
            return Object.assign({}, state, {
              // pokemons: [...state.pokemons, ...action.payload.data],
              pokemons: pokemons,
+           });
+
+         case 'GET_ALLPOKEMON':
+           return Object.assign({}, state, {
+             allPokemon: [...state.allPokemon, ...action.payload.data],
+             // pokemons: pokemons,
            });
 
          default:

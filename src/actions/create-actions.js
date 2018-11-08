@@ -27,8 +27,6 @@ export const getPokemonsAction = () => {
 }
 
 export const getAdditionalAction = (data) => {
-  // console.log(data);
-  
   let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
     return {text: flavor_text, language: language.name, version: version.name, };
   });
@@ -39,11 +37,28 @@ export const getAdditionalAction = (data) => {
       discriptionList: sortList,
       category: data.genera[2].genus,
       url: data.evolution_chain.url,
+      name: data.name,
     };
 
   return {
     type: 'GET_ADDITIONAL_INFO',
     payload: {data: newData, },
+  }
+}
+export const getAllPokemon = (data) => {
+
+    const list = data.results.slice(0, 802).map(({name}, index) => {
+      const ind = (index < 10) ? '00' + (index + 1) :
+                      (index < 100) ? '0' + (index + 1) : (index + 1);
+      return {
+        name,
+        index: ind,
+      }
+    })
+
+  return {
+    type: 'GET_ALLPOKEMON',
+    payload: {data: list, },
   }
 }
 

@@ -7,20 +7,19 @@ import Type from '../type.js';
 export default class Discription extends Component {
   constructor (props) {
     super(props);
-    console.log(props);
+    // console.log(props);
     this.state = {
       discriptionText: '',
-      discription: props.pokemonInfo.discription,
-      // discriptionList: props.pokemonInfo.discriptionList,
+      discriptionList: props.pokemonInfo.discriptionList,
     };
     this.getVersionPokemon = this.getVersionPokemon.bind(this);
   };
 
   componentDidUpdate (prevProps) {
-    if (prevProps.pokemonInfo.discription !== this.props.pokemonInfo.discription) {
+    if (prevProps.pokemonInfo.discriptionList !== this.props.pokemonInfo.discriptionList) {
       this.setState({
-        discriptionText: this.props.pokemonInfo.discription[0].text,
-        discription: this.props.pokemonInfo.discription,
+        discriptionText: this.props.pokemonInfo.discriptionList[0].text,
+        discriptionList: this.props.pokemonInfo.discriptionList,
       });
     }
   };
@@ -33,7 +32,7 @@ export default class Discription extends Component {
     if (!e) return;
 
     const target = e.target || e.srcElement;
-    const currentOption = this.state.discription[target.value];
+    const currentOption = this.state.discriptionList[target.value];
 
     if (!currentOption) return;
 
@@ -50,16 +49,15 @@ export default class Discription extends Component {
   }
 
   render() {
-    const version = this.props.pokemonInfo.discription.map((elem, index) => {
+    const version = this.props.pokemonInfo.discriptionList.map((elem, index) => {
       return <option key={index} value={index}>{elem.version}</option>;
     });
 
     let option = {
       abilities: this.props.pokemonInfo.abilities.ability.name,
       weight: this.props.pokemonInfo.weight,
-      height: this.state.height,
-      category: this.props.pokemonInfo.category,
       height: this.props.pokemonInfo.height,
+      category: this.props.pokemonInfo.category,
       type: this.props.pokemonInfo.type,
     };
 

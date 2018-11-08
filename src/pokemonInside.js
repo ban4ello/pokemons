@@ -18,12 +18,12 @@ class PokemonInside extends Component {
     super(props);
     // console.log(props);
     this.state = {
-      discription: [],
+      // discription: [],
       info: [],
       stats: [],
       pokemonPrevios: {},
       pokemonNext: {},
-      discriptionText: '',
+      // discriptionText: '',
       discriptionList: [],
       height: '',
       weight: '',
@@ -47,12 +47,30 @@ class PokemonInside extends Component {
 
   fetchAllData () {
     const pokemon = this.props.pokemons.find(({ name }) => name === this.props.match.params.name);
-    console.log(pokemon);
-    console.log(this.props.additionData);
 
     if (pokemon) {
       this.basicData(pokemon);
       this.getPreviousAndNextPokemon(pokemon.id);
+      // this.getDiscriptionPokemon();
+
+      if (pokemon.discriptionList) {
+        this.updateStateDescription(pokemon);
+      }
+
+      if (pokemon.evolution) {
+        // this.updateStateEvolution(pokemon);
+      }
+
+      if (!pokemon.discriptionList) {
+        this.getDiscriptionPokemon().then((data) => {
+          this.updateStateDescription(data);
+
+          if (!pokemon.evolution) {
+            this.evolution(data);
+          }
+        });
+      }
+
     }
     else {
       getPokemon(this.props.match.params.name)
@@ -62,14 +80,24 @@ class PokemonInside extends Component {
           this.basicData (data);
 
           this.getPreviousAndNextPokemon(data.id);
+          this.getDiscriptionPokemon().then((data) => {
+            this.updateStateDescription(data);
+
+            // if (!pokemon.evolution) {
+            //   this.evolution(data);
+            // }
+          });
 
           return data.id;
         });
     }
-    this.getDiscriptionPokemon().then((elem) => {
-      this.evolution(elem);
-    });
+  };
 
+  updateStateDescription(data) {
+    this.setState({
+      discriptionList: data.discriptionList,
+      category: data.category,
+    });
   };
 
   basicData (data) {
@@ -85,18 +113,19 @@ class PokemonInside extends Component {
     });
   }
 
-getAdditionData () {
-  this.setState({
-    category: this.props.additionData.category,
-    discription: this.props.additionData.discriptionList,
-    chainUrl: this.props.additionData.url,
-  });
-}
+  getDiscriptionPokemon () {
+    return getPokemonSpeciesByName(this.props.match.params.name)
+      .then(data => {
+        // console.log(data);
+        return this.props.getAdditionalAction(data).payload.data;
+      });
+  };
 
   evolutionPokemonList (data) {
     return getPokemonInfoEvol(data)
       .then(pokemonsList => {
         this.setState({
+          evolution: data,
           evolutionList: pokemonsList,
         });
       });
@@ -106,37 +135,8 @@ getAdditionData () {
     return getEvolution(elem.url)
     .then(data => {
       this.evolutionPokemonList(data);
-      this.setState({
-        evolution: data,
-      });
     });
   }
-
-  getDiscriptionPokemon () {
-    return getPokemonSpeciesByName(this.props.match.params.name)
-      .then(data => {
-        // console.log(data);
-        this.props.getAdditionalAction(data);
-
-        // let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
-        //   return {text: flavor_text, language: language.name, version: version.name, };
-        // });
-        // let sortList = discriptionList.filter((elem) => {
-        //   return elem.language == 'en';
-        // });
-        // let category = data.genera[2].genus;
-        // this.setState({
-          // discription: sortList,
-          // discriptionText: sortList[0].text,
-          // category: category,
-        // });
-
-        return {
-          // sortList: sortList,
-          url: data.evolution_chain.url,
-        }
-      });
-  };
 
   getPreviousAndNextPokemon(pokemonIndex) {
     return getPokemonSpecies()
@@ -186,6 +186,7 @@ getAdditionData () {
   render() {
 
     // console.log(this.state);
+    // console.log(this.props);
 
     const previosNextPokemon = {
       pokemonPrevios: this.state.pokemonPrevios,
@@ -254,10 +255,11 @@ getAdditionData () {
 
 export default connect(
   (state) => {
+    // console.log(state);
     const { pokemonsList } = state;
 
     return {
-      additionData: pokemonsList.additionData,
+      // additionData: pokemonsList,
       pokemons: pokemonsList.pokemons,
     };
   },

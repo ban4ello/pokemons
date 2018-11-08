@@ -83,6 +83,10 @@ export function getPokemonSpecies() {
 export function getPokemonSpeciesByName(name) {
   return pokemonInfo(`/pokemon-species/${name}/`);
 }
+export function getListAllPokemon() {
+  return pokemonInfo('/pokemon/');
+}
+
 
 export function getPokemons (from, to) {
   const pokemonsPromises = Array.from(new Array(to - from + 1)).map((elem, index) => getPokemon(index + from));
