@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import  './style/insidePokemon.scss';
-import Pokemon from './pokemon.js';
+// import Pokemon from './pokemon.js';
 import Type from './type.js';
 // import {GetPokemon} from './get-pokemons.js';
-import {getPokemon, getPokemonSpecies, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol, } from './components/fetch.js';
-import { pokemonsInsideAction, getPokemonInsideAction, insidePokemonsSuccessAction } from "./actions/create-actions";
+import {getPokemon, getListAllPokemon, getPokemonSpecies, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol, } from './components/fetch.js';
+// import { pokemonsInsideAction, getPokemonInsideAction, insidePokemonsSuccessAction } from "./actions/create-actions";
 import PreviousAndNextPokemon from './components/previousAndNextPokemon.js';
 import Stats from './components/stats_info.js';
 import Discription from './components/discription.js';
 import Evolution from './components/evolution.js';
 import { connect } from "react-redux";
-import { getPokemonsAction, pokemonsSuccessAction, getAdditionalAction } from "./actions/create-actions";
+import { getPokemonsAction, pokemonsSuccessAction, getAdditionalAction, getAllPokemon, getEvolutionAction, } from "./actions/create-actions";
 
 class PokemonInside extends Component {
   constructor (props) {
@@ -36,7 +36,19 @@ class PokemonInside extends Component {
   };
 
   componentDidMount() {
-    this.fetchAllData();
+    // this.pokemonsList();
+
+    if (this.props.allPokemons.length === 0) {
+      getListAllPokemon()
+      .then( data => {
+        this.props.getAllPokemon(data)
+        this.fetchAllData();
+      })
+    }
+
+    if (this.props.currentIndex !== 0) {
+      this.fetchAllData();
+    }
   };
 
   componentDidUpdate (prevProps) {
@@ -46,19 +58,18 @@ class PokemonInside extends Component {
   };
 
   fetchAllData () {
-    const pokemon = this.props.pokemons.find(({ name }) => name === this.props.match.params.name);
-
+    const pokemon = this.props.allPokemons.find(({ id, name }) => id >= 0 && name === this.props.match.params.name);
+    console.log(pokemon);
     if (pokemon) {
+      console.log('ok');
       this.basicData(pokemon);
-      this.getPreviousAndNextPokemon(pokemon.id);
-      // this.getDiscriptionPokemon();
 
       if (pokemon.discriptionList) {
         this.updateStateDescription(pokemon);
       }
-
+      console.log(pokemon.evolution);
       if (pokemon.evolution) {
-        // this.updateStateEvolution(pokemon);
+        this.updateStateEvolution(pokemon);
       }
 
       if (!pokemon.discriptionList) {
@@ -79,12 +90,11 @@ class PokemonInside extends Component {
 
           this.basicData (data);
 
-          this.getPreviousAndNextPokemon(data.id);
           this.getDiscriptionPokemon().then((data) => {
             this.updateStateDescription(data);
 
             // if (!pokemon.evolution) {
-            //   this.evolution(data);
+              this.evolution(data);
             // }
           });
 
@@ -92,6 +102,13 @@ class PokemonInside extends Component {
         });
     }
   };
+
+  updateStateEvolution(pokemon) {
+    this.setState({
+      evolution: pokemon.evolution,
+      evolutionList: pokemon.evolutionList,
+    });
+  }
 
   updateStateDescription(data) {
     this.setState({
@@ -101,6 +118,9 @@ class PokemonInside extends Component {
   };
 
   basicData (data) {
+    const pokemonsLength = this.props.allPokemons.length;
+    const prevId = data.id < 2 ? pokemonsLength - 1 : data.id - 2;
+    const nextId = data.id >= pokemonsLength ? 0 : data.id;
 
     this.setState({
       info: data,
@@ -110,8 +130,16 @@ class PokemonInside extends Component {
       abilities: data.abilities[0],
       id: data.id,
       type: this.getType(data),
+      pokemonPrevios: {
+        id: prevId,
+        name: this.props.allPokemons[prevId].name,
+      },
+      pokemonNext: {
+        id: nextId,
+        name: this.props.allPokemons[nextId].name,
+      },
     });
-  }
+  };
 
   getDiscriptionPokemon () {
     return getPokemonSpeciesByName(this.props.match.params.name)
@@ -124,10 +152,12 @@ class PokemonInside extends Component {
   evolutionPokemonList (data) {
     return getPokemonInfoEvol(data)
       .then(pokemonsList => {
+        // console.log(pokemonsList);
         this.setState({
           evolution: data,
           evolutionList: pokemonsList,
         });
+        return this.props.getEvolutionAction(pokemonsList);
       });
   }
 
@@ -137,6 +167,7 @@ class PokemonInside extends Component {
       this.evolutionPokemonList(data);
     });
   }
+
 
   getPreviousAndNextPokemon(pokemonIndex) {
     return getPokemonSpecies()
@@ -239,13 +270,13 @@ class PokemonInside extends Component {
 
               </div>
 
-              <Stats key={this.props.match.params.name} statsInfo={this.state.stats} />
+              <Stats statsInfo={this.state.stats} />
             </div>
 
-            <Discription key={this.props.match.params.name} pokemonInfo={this.state} />
+            <Discription pokemonInfo={this.state} />
           </div>
 
-          <Evolution key={this.props.match.params.name} evolutionInfo={this.state} />
+          <Evolution evolutionInfo={this.state} />
 
         </div>
       </div>
@@ -259,9 +290,10 @@ export default connect(
     const { pokemonsList } = state;
 
     return {
-      // additionData: pokemonsList,
-      pokemons: pokemonsList.pokemons,
+      allPokemons: pokemonsList.allPokemons,
+      currentIndex: pokemonsList.currentIndex,
+      test: pokemonsList.test,
     };
   },
-  { getAdditionalAction }
+  { getAdditionalAction, getAllPokemon, getEvolutionAction }
 )(PokemonInside);

@@ -19,10 +19,13 @@ class Pokemons extends Component {
   };
 
   componentDidMount() {
-    if (this.props.pokemons.length == 0) {
+    // console.log(this.props.allPokemons);
+    if (this.props.allPokemons.length === 0) {
+     this.pokemonsList();
+   }
+   if (this.props.currentIndex === 0) {
      this.getNextPokemons();
    }
-   this.pokemonsList();
   };
 
   pokemonsList () {
@@ -57,10 +60,19 @@ class Pokemons extends Component {
   }
 
   render() {
-    console.log(this.state);
-    const pokemonList = this.props.pokemons.map((pokemon) => {
+    // console.log(this.state);
+    // const pokemonList = this.props.pokemons.map((pokemon) => {
+    //   return <Pokemon key={pokemon.id} pokemon={pokemon} />
+    // });
+
+    const validPokemon = this.props.allPokemons.slice(0, this.props.currentIndex)
+    const test = validPokemon.map((pokemon) => {
+
       return <Pokemon key={pokemon.id} pokemon={pokemon} />
     });
+
+    // console.log(this.props.allPokemons);
+    // console.log(validPokemon);
 
     const loadMoreButtonClass = `${this.state.showBtn ? 'show' : ''}`;
     const loadMoreButtonText = this.props.loading ? 'Loading...' : 'Load more Pokemon';
@@ -68,7 +80,8 @@ class Pokemons extends Component {
     return (
       <div className="wraper">
         <div className="App" >
-          {pokemonList}
+          {/* {pokemonList} */}
+          {test}
         </div>
         <a id="loadMore" className={loadMoreButtonClass}>
           <span onClick={this.loadNextPokemon} id="btnLoadNextPokemons" className='button-lightblue'>
@@ -89,8 +102,8 @@ export default connect(
 
     return {
       loading: pokemonsList.loading,
-      pokemons: pokemonsList.pokemons,
       currentIndex: pokemonsList.currentIndex,
+      allPokemons: pokemonsList.allPokemons,
     };
   },
   { getPokemonsAction, pokemonsSuccessAction, getAllPokemon }

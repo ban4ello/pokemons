@@ -1,24 +1,4 @@
-import {GetPokemons, GetPokemon} from '../get-pokemons.js';
-
-export const getPokemonsActionCreator = (from, to) => (dispatch) => {
-      dispatch({
-         type: 'GET_POKEMONS',
-       });
-
-       return GetPokemons(from, to)
-        .then((data) => {
-          dispatch({
-            type: 'GET_POKEMONS_SUCCESS',
-            payload: {data, to},
-          });
-        })
-        .catch(err => {
-          dispatch({
-            type: 'GET_POKEMONS_ERROR',
-            payload: err,
-          });
-        })
-     }
+import { getPokemons } from '../components/fetch.js';
 
 export const getPokemonsAction = () => {
   return {
@@ -45,6 +25,28 @@ export const getAdditionalAction = (data) => {
     payload: {data: newData, },
   }
 }
+export const getEvolutionAction = (data) => {
+  // console.log(data);
+  const newData = data.map((item) => {
+    const index = (item.id < 10) ? '00' + item.id :
+                    (item.id < 100) ? '0' + item.id : item.id;
+    return {
+      abilities: item.abilities,
+      height: item.height,
+      id: item.id,
+      index: index,
+      name: item.name,
+      stats: item.stats,
+      types: item.types,
+      weight: item.weight,
+    }
+  })
+
+  return {
+    type: 'GET_EVOLUTION_INFO',
+    payload: { data: newData },
+  }
+}
 export const getAllPokemon = (data) => {
 
     const list = data.results.slice(0, 802).map(({name}, index) => {
@@ -63,6 +65,7 @@ export const getAllPokemon = (data) => {
 }
 
 export const pokemonsSuccessAction = ({ data, to }) => {
+  // console.log(data);
 
   const newData = data.map((item) => {
     const index = (item.id < 10) ? '00' + item.id :
