@@ -7,64 +7,69 @@ import Type from '../type.js';
 export default class Discription extends Component {
   constructor (props) {
     super(props);
-    // console.log(props);
+    console.log(props);
     this.state = {
-      discriptionText: '',
-      discriptionList: props.pokemonInfo.discriptionList,
+      selectedVersionIndex: 0,
     };
     this.getVersionPokemon = this.getVersionPokemon.bind(this);
   };
 
   componentDidUpdate (prevProps) {
-    if (prevProps.pokemonInfo.discriptionList !== this.props.pokemonInfo.discriptionList) {
+    if (JSON.stringify(prevProps.pokemon.discriptionList) !== JSON.stringify(this.props.pokemon.discriptionList)) {
       this.setState({
-        discriptionText: this.props.pokemonInfo.discriptionList[0].text,
-        discriptionList: this.props.pokemonInfo.discriptionList,
+        selectedVersionIndex: 0,
       });
     }
-  };
-
-  componentDidMount() {
-
   };
 
   getVersionPokemon (e) {
     if (!e) return;
 
     const target = e.target || e.srcElement;
-    const currentOption = this.state.discriptionList[target.value];
-
-    if (!currentOption) return;
 
     this.setState({
-      discriptionText: currentOption.text
+      selectedVersionIndex: target.value
     });
   };
 
-  getType (data) {
-    const typesList = data.types.map((type, index) => {
+  getType (types) {
+    const typesList = types.map((type, index) => {
       return <Type key={index} name={type.type.name} />
     });
     return typesList;
   }
 
   render() {
-    const version = this.props.pokemonInfo.discriptionList.map((elem, index) => {
-      return <option key={index} value={index}>{elem.version}</option>;
-    });
+    const version = this.props.pokemon.discriptionList
+      ? this.props.pokemon.discriptionList.map((elem, index) => {
+        return <option key={index} value={index}>{elem.version}</option>;
+      })
+      : [];
+
+    const descriptionTextRender = this.props.pokemon.discriptionList
+      ? <span>{this.props.pokemon.discriptionList[this.state.selectedVersionIndex].text}</span>
+      : <span>loading ...</span>;
 
     let option = {
-      abilities: this.props.pokemonInfo.abilities.ability.name,
-      weight: this.props.pokemonInfo.weight,
-      height: this.props.pokemonInfo.height,
-      category: this.props.pokemonInfo.category,
-      type: this.props.pokemonInfo.type,
+      weight: this.props.pokemon.weight,
+      height: this.props.pokemon.height,
+      category: this.props.pokemon.category,
+      type: this.getType(this.props.pokemon.types),
     };
+
+    const ability = this.props.pokemon.abilities.find(({ is_hidden }) => !is_hidden);
+    const abilityRender = ability
+      ? <li>
+          <span className="atribute-title">Abilities</span>
+          <span className="atribute-value">{ability.ability.name}</span>
+        </li>
+      : <li></li>;
+
 
     return (
       <div className="right-content">
         <div className="discription">
-          <span>{this.state.discriptionText}</span>
+          {descriptionTextRender}
           <div className="versions-menu">
             <span>Version: </span>
             <select onChange={this.getVersionPokemon} name="selectBtn1" id="selectBtn1">
@@ -101,10 +106,7 @@ export default class Discription extends Component {
                 <span className="atribute-title">Category</span>
                 <span className="atribute-value">{option.category}</span>
               </li>
-              <li>
-                <span className="atribute-title">Abilities</span>
-                <span className="atribute-value">{option.abilities}</span>
-              </li>
+              {abilityRender}
             </ul>
           </div>
         </div>

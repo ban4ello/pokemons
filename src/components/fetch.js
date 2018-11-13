@@ -63,8 +63,16 @@ export const getEvolution = (url) => {
     });
 };
 
-export function getPokemonInfoEvol (array) {
-  const pokemonsPromises = Array.from(array).map((elem, index) => getPokemon(elem.name));
+export function getPokemonInfoEvol (array, currentPokemonName) {
+
+  const pokemonsPromises = Array.from(array).map((elem, index) => {
+    // console.log(elem);
+    if (elem.name !== currentPokemonName) {
+      // console.log(111);
+      return getPokemon(elem.name);
+    }
+    return { name: currentPokemonName};
+  });
 
   return Promise.all(pokemonsPromises).then(
     (pokemonsList) => {

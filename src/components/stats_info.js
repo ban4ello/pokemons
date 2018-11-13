@@ -4,11 +4,27 @@ import  '../style/stats.scss';
 export default class Stats extends Component {
   constructor (props) {
     super(props);
+
+    this.state = { stats: this.getAtributes() }
   };
 
+  componentDidUpdate (prevProps) {
+    if (prevProps.statsInfo !== this.props.statsInfo) {
+      this.setState({
+        stats: this.getAtributes(),
+      })
+    }
+  };
+
+  getAtributes () {
+    let atribValue = this.props.statsInfo.map(({ base_stat, stat }) => {
+      return {key: stat.name, value: base_stat};
+    });
+    return atribValue.reverse();
+  }
 
   render() {
-    const infoAtribute = this.props.statsInfo.reduce((acum, {key, value}) => {
+    const infoAtribute = this.state.stats.reduce((acum, {key, value}) => {
       const max = 200;
       const correctValue = 100 - value * 100 / max;
       acum.sumOfValue += value

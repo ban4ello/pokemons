@@ -11,7 +11,7 @@ import Stats from './components/stats_info.js';
 import Discription from './components/discription.js';
 import Evolution from './components/evolution.js';
 import { connect } from "react-redux";
-import { getPokemonsAction, pokemonsSuccessAction, getAdditionalAction, getAllPokemon, getEvolutionAction, } from "./actions/create-actions";
+import { getPokemonsAction, getPokemonAction, getAdditionalAction, getAllPokemon, getEvolutionAction, } from "./actions/create-actions";
 
 class PokemonInside extends Component {
   constructor (props) {
@@ -19,19 +19,20 @@ class PokemonInside extends Component {
     // console.log(props);
     this.state = {
       // discription: [],
-      info: [],
-      stats: [],
+      // info: [],
+      // stats: [],
+      pokemon: {},
       pokemonPrevios: {},
       pokemonNext: {},
       // discriptionText: '',
-      discriptionList: [],
-      height: '',
-      weight: '',
-      category: '',
-      abilities: { ability: {} },
-      evolution: [],
-      evolutionList: [],
-      id: '',
+      // discriptionList: [],
+      // height: '',
+      // weight: '',
+      // category: '',
+      // abilities: { ability: {} },
+      // evolution: [],
+      // evolutionList: [],
+      // id: '',
      };
   };
 
@@ -58,43 +59,51 @@ class PokemonInside extends Component {
   };
 
   fetchAllData () {
-    const pokemon = this.props.allPokemons.find(({ id, name }) => id >= 0 && name === this.props.match.params.name);
-    console.log(pokemon);
-    if (pokemon) {
-      console.log('ok');
-      this.basicData(pokemon);
+    const pokemon = this.getPokemonFromList();
 
-      if (pokemon.discriptionList) {
-        this.updateStateDescription(pokemon);
-      }
-      console.log(pokemon.evolution);
-      if (pokemon.evolution) {
-        this.updateStateEvolution(pokemon);
-      }
+    if (pokemon) {
+      //
+      // if (pokemon.discriptionList) {
+      //   this.updateStateDescription(pokemon);
+      // }
+      // // console.log(pokemon.evolution);
+      // if (pokemon.evolution) {
+      //   this.updateStateEvolution(pokemon);
+      // }
 
       if (!pokemon.discriptionList) {
         this.getDiscriptionPokemon().then((data) => {
-          this.updateStateDescription(data);
+          // this.updateStateDescription(data);
 
           if (!pokemon.evolution) {
+            console.log(111);
             this.evolution(data);
+            this.updatePokemon(pokemon);
           }
         });
       }
 
+      this.updatePokemon(pokemon);
     }
     else {
       getPokemon(this.props.match.params.name)
         .then(data => {
           // console.log(data);
+          this.props.getPokemonAction(data);
 
-          this.basicData (data);
 
           this.getDiscriptionPokemon().then((data) => {
-            this.updateStateDescription(data);
+            // this.updateStateDescription(data);
+            this.evolution(data);
+
+            const pokemon = this.getPokemonFromList();
+
+            this.updatePokemon(pokemon);
+
+            // console.log(data);
 
             // if (!pokemon.evolution) {
-              this.evolution(data);
+              // this.evolution(data);
             // }
           });
 
@@ -102,6 +111,10 @@ class PokemonInside extends Component {
         });
     }
   };
+
+  getPokemonFromList() {
+    return this.props.allPokemons.find(({ id, name }) => id >= 0 && (name === this.props.match.params.name || id === +this.props.match.params.name));
+  }
 
   updateStateEvolution(pokemon) {
     this.setState({
@@ -117,27 +130,24 @@ class PokemonInside extends Component {
     });
   };
 
-  basicData (data) {
+  updatePokemon (pokemon) {
     const pokemonsLength = this.props.allPokemons.length;
-    const prevId = data.id < 2 ? pokemonsLength - 1 : data.id - 2;
-    const nextId = data.id >= pokemonsLength ? 0 : data.id;
+    const prevId = pokemon.id < 2 ? pokemonsLength - 1 : pokemon.id - 2;
+    const nextId = pokemon.id >= pokemonsLength ? 0 : pokemon.id;
+    // const currentPokemon = pokemon.id - 1;
 
+    console.log(pokemon);
     this.setState({
-      info: data,
-      stats: this.getAtributes(data),
-      height: data.height,
-      weight: this.getOptions(data).weight,
-      abilities: data.abilities[0],
-      id: data.id,
-      type: this.getType(data),
-      pokemonPrevios: {
-        id: prevId,
-        name: this.props.allPokemons[prevId].name,
-      },
-      pokemonNext: {
-        id: nextId,
-        name: this.props.allPokemons[nextId].name,
-      },
+      pokemon: pokemon,
+      // stats: this.getAtributes(pokemon),
+      // height: pokemon.height,
+      // weight: this.getOptions(pokemon).weight,
+      // abilities: pokemon.abilities[0],
+      // id: pokemon.id,
+      // type: this.getType(pokemon),
+      pokemonPrevios: this.props.allPokemons[prevId],
+      pokemonNext: this.props.allPokemons[nextId],
+      // index: this.props.allPokemons[currentPokemon].index,
     });
   };
 
@@ -150,14 +160,29 @@ class PokemonInside extends Component {
   };
 
   evolutionPokemonList (data) {
-    return getPokemonInfoEvol(data)
+    return getPokemonInfoEvol(data, this.props.match.params.name)
       .then(pokemonsList => {
-        // console.log(pokemonsList);
+        console.log(pokemonsList);
+        // console.log(1);
+        pokemonsList.forEach(pokemon => {
+          if (pokemon.id >= 0) {
+            this.props.getPokemonAction(pokemon);
+          }
+        })
+        this.props.getEvolutionAction(data);
+        // console.log(2, this.props.allPokemons[0].evolution);
         this.setState({
           evolution: data,
-          evolutionList: pokemonsList,
+          evolutionList: pokemonsList.map(pokemon => {
+            if (pokemon.id >= 0) {
+              return pokemon;
+            }
+
+            return this.props.allPokemons.find(({ id, name }) => id >= 0 && name === this.props.match.params.name);
+
+          }),
         });
-        return this.props.getEvolutionAction(pokemonsList);
+        return;
       });
   }
 
@@ -168,33 +193,12 @@ class PokemonInside extends Component {
     });
   }
 
-
-  getPreviousAndNextPokemon(pokemonIndex) {
-    return getPokemonSpecies()
-      .then(data => {
-        const pokemonsLength = data.results.length;
-        const prevId = pokemonIndex < 2 ? pokemonsLength - 1 : pokemonIndex - 2;
-        const nextId = pokemonIndex >= pokemonsLength ? 0 : pokemonIndex;
-        this.setState({
-          pokemonPrevios: {
-            id: prevId,
-            name: data.results[prevId].name,
-          },
-          pokemonNext: {
-            id: nextId,
-            name: data.results[nextId].name,
-          },
-        });
-
-      });
-  };
-
-  getAtributes (data) {
-    let atribValue = data.stats.map(({ base_stat, stat }) => {
-      return {key: stat.name, value: base_stat};
-    });
-    return atribValue.reverse();
-  }
+  // getAtributes (data) {
+  //   let atribValue = data.stats.map(({ base_stat, stat }) => {
+  //     return {key: stat.name, value: base_stat};
+  //   });
+  //   return atribValue.reverse();
+  // }
 
   getOptions (data) {
     let weight = ((data.weight / 10) * 2.2046).toFixed(1);
@@ -216,30 +220,23 @@ class PokemonInside extends Component {
 
   render() {
 
-    // console.log(this.state);
-    // console.log(this.props);
-
-    const previosNextPokemon = {
-      pokemonPrevios: this.state.pokemonPrevios,
-      pokemonNext: this.state.pokemonNext,
-      id: this.state.id,
-      name: this.state.info.name,
-    }
-
-    let pokemonIndex = (this.state.info.id < 10) ? '00' + this.state.info.id :
-                    (this.state.info.id < 100) ? '0' + this.state.info.id : this.state.info.id;
+    if (Object.keys(this.state.pokemon).length === 0) return  <div className="wraper">No pokemon</div>
 
     return (
       <div className="wraper">
         <div className="container pokedex">
 
-          <PreviousAndNextPokemon key={this.state.id} pokemon={previosNextPokemon} />
+          <PreviousAndNextPokemon
+            pokemon={this.state.pokemon}
+            pokemonPrevios={this.state.pokemonPrevios}
+            pokemonNext={this.state.pokemonNext}
+          />
 
           <div className="section pokedex-pokemon-details">
 
             <div className="left-content">
               <div className="avatar">
-                <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/full/${pokemonIndex}.png`} className="imgFront" alt="pokemon"></img>
+                <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/full/${this.state.pokemon.index}.png`} className="imgFront" alt="pokemon"></img>
               </div>
 
               <div className="collectibles-wrapper">
@@ -270,13 +267,13 @@ class PokemonInside extends Component {
 
               </div>
 
-              <Stats statsInfo={this.state.stats} />
+              <Stats statsInfo={this.state.pokemon.stats} />
             </div>
 
-            <Discription pokemonInfo={this.state} />
+            <Discription pokemon={this.state.pokemon} />
           </div>
 
-          <Evolution evolutionInfo={this.state} />
+          <Evolution evolutions={ this.state.pokemon.evolution } />
 
         </div>
       </div>
@@ -292,8 +289,8 @@ export default connect(
     return {
       allPokemons: pokemonsList.allPokemons,
       currentIndex: pokemonsList.currentIndex,
-      test: pokemonsList.test,
+      // test: pokemonsList.test,
     };
   },
-  { getAdditionalAction, getAllPokemon, getEvolutionAction }
+  { getAdditionalAction, getAllPokemon, getEvolutionAction, getPokemonAction }
 )(PokemonInside);

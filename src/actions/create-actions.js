@@ -26,24 +26,46 @@ export const getAdditionalAction = (data) => {
   }
 }
 export const getEvolutionAction = (data) => {
-  // console.log(data);
+  // console.log(pokemonsList);
   const newData = data.map((item) => {
-    const index = (item.id < 10) ? '00' + item.id :
-                    (item.id < 100) ? '0' + item.id : item.id;
+    // const index = (item.id < 10) ? '00' + item.id :
+    //                 (item.id < 100) ? '0' + item.id : item.id;
     return {
-      abilities: item.abilities,
-      height: item.height,
-      id: item.id,
-      index: index,
+      // abilities: item.abilities,
+      // height: item.height,
+      // id: item.id,
+      // index: index,
       name: item.name,
-      stats: item.stats,
-      types: item.types,
-      weight: item.weight,
+      // stats: item.stats,
+      // types: item.types,
+      // weight: item.weight,
+      evolution: data,
+      // evolutionList: pokemonsList,
     }
   })
 
   return {
     type: 'GET_EVOLUTION_INFO',
+    payload: { data: newData },
+  }
+}
+export const getPokemonAction = (pokemon) => {
+  // console.log(pokemon);
+  const index = (pokemon.id < 10) ? '00' + pokemon.id :
+                  (pokemon.id < 100) ? '0' + pokemon.id : pokemon.id;
+  const newData = {
+    abilities: pokemon.abilities,
+    height: pokemon.height,
+    id: pokemon.id,
+    index: index,
+    name: pokemon.name,
+    stats: pokemon.stats,
+    types: pokemon.types,
+    weight: pokemon.weight,
+  }
+
+  return {
+    type: 'GET_ADDITIONAL_INFO',
     payload: { data: newData },
   }
 }
