@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import  '../style/discription.scss';
+import  '../style/rightContent.scss';
 import {pokemonInfo} from './fetch.js';
 import Type from '../type.js';
 
@@ -7,7 +7,6 @@ import Type from '../type.js';
 export default class Discription extends Component {
   constructor (props) {
     super(props);
-    console.log(props);
     this.state = {
       selectedVersionIndex: 0,
     };

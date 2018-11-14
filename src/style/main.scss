@@ -18,6 +18,22 @@ body {
   justify-content: center;
 }
 
+.loader {
+    border: 16px solid #bebebe;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin .2s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
 .pokemon h2:first-letter {text-transform: uppercase;}
 .type p:first-letter {text-transform: uppercase;}
 

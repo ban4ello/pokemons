@@ -48,7 +48,7 @@ class Evolution extends Component {
     }
       else if (onlySecondLevel.length == 2) {
       claz = 'onlyTwoLevel2';
-    } 
+    }
       else {
       claz = 'threeEvol';
     }

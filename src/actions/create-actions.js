@@ -26,21 +26,11 @@ export const getAdditionalAction = (data) => {
   }
 }
 export const getEvolutionAction = (data) => {
-  // console.log(pokemonsList);
   const newData = data.map((item) => {
-    // const index = (item.id < 10) ? '00' + item.id :
-    //                 (item.id < 100) ? '0' + item.id : item.id;
+
     return {
-      // abilities: item.abilities,
-      // height: item.height,
-      // id: item.id,
-      // index: index,
       name: item.name,
-      // stats: item.stats,
-      // types: item.types,
-      // weight: item.weight,
       evolution: data,
-      // evolutionList: pokemonsList,
     }
   })
 

@@ -1,5 +1,5 @@
 const getInitialState = () => {
-  return {loading: false, currentIndex: 0, error: null, allPokemons: []};
+  return {loading: false, showLoader: true, currentIndex: 0, error: null, allPokemons: []};
 }
 
 const pokemonsList = (state = getInitialState(), action) => {
@@ -7,7 +7,7 @@ const pokemonsList = (state = getInitialState(), action) => {
 
   switch (action.type) {
     case 'GET_POKEMONS':
-      return Object.assign({}, state, {loading: true});
+      return Object.assign({}, state, {loading: true, showLoader: true,});
 
     case 'GET_POKEMONS_SUCCESS':
       action.payload.data.forEach((pokemon) => {
@@ -17,7 +17,8 @@ const pokemonsList = (state = getInitialState(), action) => {
       return Object.assign({}, state, {
         currentIndex: action.payload.to,
         loading: false,
-        allPokemons: allPokemonsClone
+        allPokemons: allPokemonsClone,
+        showLoader: false,
       });
 
     case 'GET_POKEMONS_ERROR':
@@ -30,7 +31,8 @@ const pokemonsList = (state = getInitialState(), action) => {
       updatePokemon(allPokemonsClone, action.payload.data);
 
       return Object.assign({}, state, {
-        allPokemons: allPokemonsClone
+        allPokemons: allPokemonsClone,
+        showLoader: false,
       });
     case 'GET_EVOLUTION_INFO':
       action.payload.data.forEach((pokemon) => {

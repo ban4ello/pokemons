@@ -23,12 +23,23 @@ class Pokemon extends Component {
 
   render() {
     const pokemon = this.props.pokemon;
-  
+
     const pokemonName = this.props.pokemon.name;
     const pokemonId = this.props.pokemon.id;
     const typesList = pokemon.types.map((type, index) => {
       return <Type key={index} name={type.type.name} />
     });
+
+    let arrayIconName = [ 'Collection', 'Wishlist', 'Trade', ];
+    const icon = arrayIconName.map((item) => {
+      return (
+        <div className={`${item}`} key={item}>
+          <a href="#" title={`Add to My ${item}`}>
+            <span className={`icon icon_${item.toLowerCase()}`}></span>
+          </a>
+        </div>
+      )
+    })
 
     return (
       <div className="pokemon">
@@ -37,25 +48,7 @@ class Pokemon extends Component {
         </Link>
 
         <div className="collectibles">
-
-          <div className="collection">
-            <a href="#" title="Add to My Collection">
-              <span className="icon icon_collection"></span>
-            </a>
-          </div>
-
-          <div className="wishlist">
-            <a href="#" title="Add to My Wish List">
-              <span className="icon icon_wishlist"></span>
-            </a>
-          </div>
-
-          <div className="trade">
-            <a href="#" title="Add to My Trade List">
-              <span className="icon icon_trade"></span>
-            </a>
-          </div>
-
+          {icon}
         </div>
         <p className="pokemon-index">#{pokemon.index}</p>
         <h2>{pokemon.name}</h2>

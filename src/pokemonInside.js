@@ -1,38 +1,23 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import  './style/insidePokemon.scss';
-// import Pokemon from './pokemon.js';
 import Type from './type.js';
-// import {GetPokemon} from './get-pokemons.js';
 import {getPokemon, getListAllPokemon, getPokemonSpecies, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol, } from './components/fetch.js';
-// import { pokemonsInsideAction, getPokemonInsideAction, insidePokemonsSuccessAction } from "./actions/create-actions";
 import PreviousAndNextPokemon from './components/previousAndNextPokemon.js';
-import Stats from './components/stats_info.js';
-import Discription from './components/discription.js';
+// import Stats from './components/stats_info.js';
+import RightContent from './components/rightContent.js';
 import Evolution from './components/evolution.js';
+import LeftContent from './components/leftContent.js';
 import { connect } from "react-redux";
 import { getPokemonsAction, getPokemonAction, getAdditionalAction, getAllPokemon, getEvolutionAction, } from "./actions/create-actions";
 
 class PokemonInside extends Component {
   constructor (props) {
     super(props);
-    // console.log(props);
     this.state = {
-      // discription: [],
-      // info: [],
-      // stats: [],
       pokemon: {},
       pokemonPrevios: {},
       pokemonNext: {},
-      // discriptionText: '',
-      // discriptionList: [],
-      // height: '',
-      // weight: '',
-      // category: '',
-      // abilities: { ability: {} },
-      // evolution: [],
-      // evolutionList: [],
-      // id: '',
      };
   };
 
@@ -62,21 +47,10 @@ class PokemonInside extends Component {
     const pokemon = this.getPokemonFromList();
 
     if (pokemon) {
-      //
-      // if (pokemon.discriptionList) {
-      //   this.updateStateDescription(pokemon);
-      // }
-      // // console.log(pokemon.evolution);
-      // if (pokemon.evolution) {
-      //   this.updateStateEvolution(pokemon);
-      // }
-
       if (!pokemon.discriptionList) {
         this.getDiscriptionPokemon().then((data) => {
-          // this.updateStateDescription(data);
 
           if (!pokemon.evolution) {
-            console.log(111);
             this.evolution(data);
             this.updatePokemon(pokemon);
           }
@@ -88,23 +62,12 @@ class PokemonInside extends Component {
     else {
       getPokemon(this.props.match.params.name)
         .then(data => {
-          // console.log(data);
           this.props.getPokemonAction(data);
-
-
           this.getDiscriptionPokemon().then((data) => {
-            // this.updateStateDescription(data);
             this.evolution(data);
 
             const pokemon = this.getPokemonFromList();
-
             this.updatePokemon(pokemon);
-
-            // console.log(data);
-
-            // if (!pokemon.evolution) {
-              // this.evolution(data);
-            // }
           });
 
           return data.id;
@@ -134,20 +97,11 @@ class PokemonInside extends Component {
     const pokemonsLength = this.props.allPokemons.length;
     const prevId = pokemon.id < 2 ? pokemonsLength - 1 : pokemon.id - 2;
     const nextId = pokemon.id >= pokemonsLength ? 0 : pokemon.id;
-    // const currentPokemon = pokemon.id - 1;
 
-    console.log(pokemon);
     this.setState({
       pokemon: pokemon,
-      // stats: this.getAtributes(pokemon),
-      // height: pokemon.height,
-      // weight: this.getOptions(pokemon).weight,
-      // abilities: pokemon.abilities[0],
-      // id: pokemon.id,
-      // type: this.getType(pokemon),
       pokemonPrevios: this.props.allPokemons[prevId],
       pokemonNext: this.props.allPokemons[nextId],
-      // index: this.props.allPokemons[currentPokemon].index,
     });
   };
 
@@ -162,15 +116,12 @@ class PokemonInside extends Component {
   evolutionPokemonList (data) {
     return getPokemonInfoEvol(data, this.props.match.params.name)
       .then(pokemonsList => {
-        console.log(pokemonsList);
-        // console.log(1);
         pokemonsList.forEach(pokemon => {
           if (pokemon.id >= 0) {
             this.props.getPokemonAction(pokemon);
           }
         })
         this.props.getEvolutionAction(data);
-        // console.log(2, this.props.allPokemons[0].evolution);
         this.setState({
           evolution: data,
           evolutionList: pokemonsList.map(pokemon => {
@@ -193,13 +144,6 @@ class PokemonInside extends Component {
     });
   }
 
-  // getAtributes (data) {
-  //   let atribValue = data.stats.map(({ base_stat, stat }) => {
-  //     return {key: stat.name, value: base_stat};
-  //   });
-  //   return atribValue.reverse();
-  // }
-
   getOptions (data) {
     let weight = ((data.weight / 10) * 2.2046).toFixed(1);
     let abilities = data.abilities.map((elem) => {
@@ -219,11 +163,14 @@ class PokemonInside extends Component {
   }
 
   render() {
-
-    if (Object.keys(this.state.pokemon).length === 0) return  <div className="wraper">No pokemon</div>
+    if (Object.keys(this.state.pokemon).length === 0) return  <div className="loader"></div>
 
     return (
       <div className="wraper">
+
+        {/* <div className='loader'></div> */}
+
+
         <div className="container pokedex">
 
           <PreviousAndNextPokemon
@@ -233,44 +180,8 @@ class PokemonInside extends Component {
           />
 
           <div className="section pokedex-pokemon-details">
-
-            <div className="left-content">
-              <div className="avatar">
-                <img src={`https://assets.pokemon.com/assets/cms2/img/pokedex/full/${this.state.pokemon.index}.png`} className="imgFront" alt="pokemon"></img>
-              </div>
-
-              <div className="collectibles-wrapper">
-
-                <div className="collectibles-collection">
-                  <a href="#" title="Add to My Collection">
-                    <span className="icon icon_collection"></span>
-                  </a>
-                </div>
-
-                <div className="collectibles-wishlist">
-                  <a href="#" title="Add to My Wish List">
-                    <span className="icon icon_wishlist"></span>
-                  </a>
-                </div>
-
-                <div className="collectibles-trade">
-                  <a href="#" title="Add to My Trade List">
-                    <span className="icon icon_trade"></span>
-                  </a>
-                </div>
-
-                <div className="collectibles-plus">
-                  <a href="#" title="Add to favorites!">
-                    <span className="icon icon_add"></span>
-                  </a>
-                </div>
-
-              </div>
-
-              <Stats statsInfo={this.state.pokemon.stats} />
-            </div>
-
-            <Discription pokemon={this.state.pokemon} />
+            <LeftContent index={this.state.pokemon.index} statsInfo={this.state.pokemon.stats}/>
+            <RightContent pokemon={this.state.pokemon} />
           </div>
 
           <Evolution evolutions={ this.state.pokemon.evolution } />
@@ -283,13 +194,12 @@ class PokemonInside extends Component {
 
 export default connect(
   (state) => {
-    // console.log(state);
     const { pokemonsList } = state;
 
     return {
       allPokemons: pokemonsList.allPokemons,
       currentIndex: pokemonsList.currentIndex,
-      // test: pokemonsList.test,
+      showLoader: pokemonsList.showLoader,
     };
   },
   { getAdditionalAction, getAllPokemon, getEvolutionAction, getPokemonAction }

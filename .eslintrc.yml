@@ -1,0 +1,68 @@
+extends:
+  ["eslint:recommended", "plugin:react/recommended"]
+plugins:
+  - react
+parserOptions:
+  ecmaVersion: 8
+  sourceType: "module"
+env:
+  browser: true
+  jquery: true
+  commonjs: true
+  node: true
+  es6: true
+  shelljs: true
+  mocha: true
+rules:
+  arrow-spacing:
+    - error
+  indent:
+    - error
+    - 2
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+    - allowTemplateLiterals: true
+  semi:
+    - error
+    - always
+  no-console:
+    - 1
+  max-len:
+    - 0
+    - 140
+  no-multi-spaces:
+    - error
+  comma-dangle:
+    - error
+    - always-multiline
+  newline-before-return:
+    - error
+  no-multiple-empty-lines:
+    - error
+  no-nested-ternary:
+    - error
+  no-trailing-spaces:
+    - error
+  one-var:
+    - error
+    - never
+  padded-blocks:
+    - error
+    - never
+  eqeqeq:
+    - error
+    - smart
+  space-before-function-paren:
+    - error
+    - always
+  import/no-unresolved:
+    - 0
+  space-before-blocks:
+    - error
+    - always
+  space-infix-ops:
+    - error

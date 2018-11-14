@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Pokemon from './pokemon.js';
-// import {getPokemons, GetPokemon} from './get-pokemons.js';
 import {getListAllPokemon, getPokemons, } from './components/fetch.js';
 import  './style/main.scss';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
@@ -19,7 +18,6 @@ class Pokemons extends Component {
   };
 
   componentDidMount() {
-    // console.log(this.props.allPokemons);
     if (this.props.allPokemons.length === 0) {
      this.pokemonsList();
    }
@@ -60,28 +58,23 @@ class Pokemons extends Component {
   }
 
   render() {
-    // console.log(this.state);
-    // const pokemonList = this.props.pokemons.map((pokemon) => {
-    //   return <Pokemon key={pokemon.id} pokemon={pokemon} />
-    // });
-
     const validPokemon = this.props.allPokemons.slice(0, this.props.currentIndex)
-    const test = validPokemon.map((pokemon) => {
+    const pokemon = validPokemon.map((pokemon) => {
 
       return <Pokemon key={pokemon.id} pokemon={pokemon} />
     });
 
-    // console.log(this.props.allPokemons);
-    // console.log(validPokemon);
-
     const loadMoreButtonClass = `${this.state.showBtn ? 'show' : ''}`;
+    const loaderClass = `${this.props.showLoader ? 'loader' : ''}`;
     const loadMoreButtonText = this.props.loading ? 'Loading...' : 'Load more Pokemon';
 
     return (
       <div className="wraper">
+
+        <div className={loaderClass}></div>
+
         <div className="App" >
-          {/* {pokemonList} */}
-          {test}
+          {pokemon}
         </div>
         <a id="loadMore" className={loadMoreButtonClass}>
           <span onClick={this.loadNextPokemon} id="btnLoadNextPokemons" className='button-lightblue'>
@@ -97,11 +90,11 @@ class Pokemons extends Component {
 
 export default connect(
   (state) => {
-    // console.log(state);
     const { pokemonsList } = state;
 
     return {
       loading: pokemonsList.loading,
+      showLoader: pokemonsList.showLoader,
       currentIndex: pokemonsList.currentIndex,
       allPokemons: pokemonsList.allPokemons,
     };

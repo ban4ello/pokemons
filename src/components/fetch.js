@@ -1,32 +1,32 @@
-export function pokemonInfo(endpoint) {
+export function pokemonInfo (endpoint) {
   return fetch(`https://pokeapi.co/api/v2${endpoint}`).then(
-    function(response) {
+    function (response) {
       if (response.status !== 200) {
         console.log('Looks like there was a problem. Status Code: ' + response.status);
 
         return;
       }
-      return response.json().then(function(data) {
+
+      return response.json().then(function (data) {
         return data;
       });
     }
   )
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
-  });
+    .catch(function (err) {
+      console.log('Fetch Error :-S', err);
+    });
 }
 
-export function evolutionInfo(url) {
-
+export function evolutionInfo (url) {
   return fetch(url).then(
-    function(response) {
+    function (response) {
       // console.log(response);
       if (response.status !== 200) {
         console.log('Looks like there was a problem. Status Code: ' + response.status);
 
         return;
       }
-      return response.json().then(function(data) {
+      return response.json().then(function (data) {
         return data;
       });
     }

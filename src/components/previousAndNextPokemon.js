@@ -16,14 +16,14 @@ export default class PreviousAndNextPokemon extends Component {
           <Link to={`/pokemon/${this.props.pokemonPrevios.name}/`} className="previous">
             <div className="pokedex-pokemon-pagination-wrapper">
               <span className="icon icon_arrow_sm_left"></span>
-              <span className="pokemon-number">#{this.props.pokemonPrevios.index}</span>
+              <span className="pokemon-number">#{this.props.pokemonPrevios.index} </span>
               <span className="pokemon-name" id="pokemon-name">{this.props.pokemonPrevios.name}</span>
             </div>
           </Link>
           <Link to={`/pokemon/${this.props.pokemonNext.name}/`} className="next">
             <div className="pokedex-pokemon-pagination-wrapper">
               <span className="icon icon_arrow_sm_right"></span>
-              <span className="pokemon-number">#{this.props.pokemonNext.index}</span>
+              <span className="pokemon-number">#{this.props.pokemonNext.index} </span>
               <span className="pokemon-name" id="pokemon-name">{this.props.pokemonNext.name}</span>
             </div>
           </Link>
