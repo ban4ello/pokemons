@@ -44,7 +44,7 @@ class PokemonInside extends Component {
     const pokemon = this.getPokemonFromList();
 
     if (pokemon) {
-      if (!pokemon.discriptionList) {
+      if (!pokemon.descriptionList) {
         this.getDiscriptionPokemon().then((data) => {
           if (!pokemon.evolution) {
             this.evolution(data);
@@ -84,7 +84,7 @@ class PokemonInside extends Component {
 
   updateStateDescription (data) {
     this.setState({
-      discriptionList: data.discriptionList,
+      descriptionList: data.descriptionList,
       category: data.category,
     });
   }
