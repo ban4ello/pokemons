@@ -6,14 +6,14 @@ export const getPokemonsAction = () => {
 };
 
 export const getAdditionalAction = (data) => {
-  let discriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
+  let descriptionList = data.flavor_text_entries.map(({ flavor_text, language, version }) => {
     return {text: flavor_text, language: language.name, version: version.name };
   });
-  let sortList = discriptionList.filter((elem) => {
+  let sortList = descriptionList.filter((elem) => {
     return elem.language === 'en';
   });
   const newData = {
-    discriptionList: sortList,
+    descriptionList: sortList,
     category: data.genera[2].genus,
     url: data.evolution_chain.url,
     name: data.name,

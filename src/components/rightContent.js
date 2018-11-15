@@ -13,7 +13,7 @@ export default class RightContent extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (JSON.stringify(prevProps.pokemon.discriptionList) !== JSON.stringify(this.props.pokemon.discriptionList)) {
+    if (JSON.stringify(prevProps.pokemon.descriptionList) !== JSON.stringify(this.props.pokemon.descriptionList)) {
       this.setState({
         selectedVersionIndex: 0,
       });
@@ -39,14 +39,14 @@ export default class RightContent extends Component {
   }
 
   render () {
-    const version = this.props.pokemon.discriptionList
-      ? this.props.pokemon.discriptionList.map((elem, index) => {
+    const version = this.props.pokemon.descriptionList
+      ? this.props.pokemon.descriptionList.map((elem, index) => {
         return <option key={index} value={index}>{elem.version}</option>;
       })
       : [];
 
-    const descriptionTextRender = this.props.pokemon.discriptionList
-      ? <span>{this.props.pokemon.discriptionList[this.state.selectedVersionIndex].text}</span>
+    const descriptionTextRender = this.props.pokemon.descriptionList
+      ? <span>{this.props.pokemon.descriptionList[this.state.selectedVersionIndex].text}</span>
       : <span>loading ...</span>;
 
     let option = {
