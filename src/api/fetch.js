@@ -26,14 +26,15 @@ export function evolutionInfo (url) {
 
         return;
       }
+
       return response.json().then(function (data) {
         return data;
       });
     }
   )
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
-  });
+    .catch(function (err) {
+      console.log('Fetch Error :-S', err);
+    });
 }
 
 export const getEvolution = (url) => {
@@ -46,31 +47,30 @@ export const getEvolution = (url) => {
       const getNameEvol = (info) => {
         if (info.length !== 0) {
           current += 1;
-          info.map(({evolves_to, species}, index) => {
-            arrayEvolution.push({ name: species.name, level: `${current}`, }, );
+          info.map(({evolves_to, species}) => {
+            arrayEvolution.push({ name: species.name, level: `${current}` }, );
 
             if (evolves_to.length !== 0) {
-               getNameEvol(evolves_to);
+              getNameEvol(evolves_to);
             }
-          })
+          });
         }
-
-      }
-      arrayEvolution.push({ name: data.chain.species.name, level: `${current}`, }, );
+      };
+      arrayEvolution.push({ name: data.chain.species.name, level: `${current}` }, );
       getNameEvol(data.chain.evolves_to);
-      // console.log(arrayEvolution);
+
       return arrayEvolution;
     });
 };
 
 export function getPokemonInfoEvol (array, currentPokemonName) {
-
-  const pokemonsPromises = Array.from(array).map((elem, index) => {
+  const pokemonsPromises = Array.from(array).map((elem) => {
     // console.log(elem);
     if (elem.name !== currentPokemonName) {
       // console.log(111);
       return getPokemon(elem.name);
     }
+
     return { name: currentPokemonName};
   });
 
@@ -78,20 +78,20 @@ export function getPokemonInfoEvol (array, currentPokemonName) {
     (pokemonsList) => {
       return pokemonsList;
     }
-  ).catch(err => {});
+  );
 }
 
-export function getPokemon(name) {
+export function getPokemon (name) {
   return pokemonInfo(`/pokemon/${name}/`);
 }
 
-export function getPokemonSpecies() {
+export function getPokemonSpecies () {
   return pokemonInfo('/pokemon-species/');
 }
-export function getPokemonSpeciesByName(name) {
+export function getPokemonSpeciesByName (name) {
   return pokemonInfo(`/pokemon-species/${name}/`);
 }
-export function getListAllPokemon() {
+export function getListAllPokemon () {
   return pokemonInfo('/pokemon/');
 }
 
@@ -103,5 +103,5 @@ export function getPokemons (from, to) {
     (pokemonsList) => {
       return pokemonsList;
     }
-  ).catch(err => {});
+  );
 }

@@ -14,6 +14,8 @@ env:
   shelljs: true
   mocha: true
 rules:
+  # react/prop-types:
+  #   - off
   arrow-spacing:
     - error
   indent:

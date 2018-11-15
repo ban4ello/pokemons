@@ -1,14 +1,15 @@
-import React, { Component } from 'react'
-import  '../style/previousAndNextPokemon.scss';
-import { getPokemonsList } from './fetch';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import React, { Component } from 'react';
+import '../style/previousAndNextPokemon.scss';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 
 export default class PreviousAndNextPokemon extends Component {
   constructor (props) {
     super(props);
-  };
+  }
 
-  render() {
+  render () {
     return (
       <div className="header">
         <div className="pokedex-pokemon-pagination">
@@ -37,6 +38,12 @@ export default class PreviousAndNextPokemon extends Component {
         </div>
 
       </div>
-    )
+    );
   }
 }
+
+PreviousAndNextPokemon.propTypes = {
+  pokemon: PropTypes.object,
+  pokemonPrevios: PropTypes.object,
+  pokemonNext: PropTypes.object,
+};

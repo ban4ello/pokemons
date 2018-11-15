@@ -1,17 +1,16 @@
-import React, { Component } from 'react'
-import  '../style/rightContent.scss';
-import {pokemonInfo} from './fetch.js';
-import Type from '../type.js';
+import React, { Component } from 'react';
+import '../style/rightContent.scss';
+import Type from './type.js';
+import PropTypes from 'prop-types';
 
-
-export default class Discription extends Component {
+export default class RightContent extends Component {
   constructor (props) {
     super(props);
     this.state = {
       selectedVersionIndex: 0,
     };
     this.getVersionPokemon = this.getVersionPokemon.bind(this);
-  };
+  }
 
   componentDidUpdate (prevProps) {
     if (JSON.stringify(prevProps.pokemon.discriptionList) !== JSON.stringify(this.props.pokemon.discriptionList)) {
@@ -19,7 +18,7 @@ export default class Discription extends Component {
         selectedVersionIndex: 0,
       });
     }
-  };
+  }
 
   getVersionPokemon (e) {
     if (!e) return;
@@ -27,18 +26,19 @@ export default class Discription extends Component {
     const target = e.target || e.srcElement;
 
     this.setState({
-      selectedVersionIndex: target.value
+      selectedVersionIndex: target.value,
     });
-  };
+  }
 
   getType (types) {
     const typesList = types.map((type, index) => {
-      return <Type key={index} name={type.type.name} />
+      return <Type key={index} name={type.type.name} />;
     });
+
     return typesList;
   }
 
-  render() {
+  render () {
     const version = this.props.pokemon.discriptionList
       ? this.props.pokemon.discriptionList.map((elem, index) => {
         return <option key={index} value={index}>{elem.version}</option>;
@@ -59,9 +59,9 @@ export default class Discription extends Component {
     const ability = this.props.pokemon.abilities.find(({ is_hidden }) => !is_hidden);
     const abilityRender = ability
       ? <li>
-          <span className="atribute-title">Abilities</span>
-          <span className="atribute-value">{ability.ability.name}</span>
-        </li>
+        <span className="atribute-title">Abilities</span>
+        <span className="atribute-value">{ability.ability.name}</span>
+      </li>
       : <li></li>;
 
 
@@ -84,11 +84,13 @@ export default class Discription extends Component {
             <ul>
               <li>
                 <span className="atribute-title">Height</span>
-                <span className="atribute-value">{option.height}'</span>
+                <span className="atribute-value">
+                  {option.height}{`'`}
+                </span>
               </li>
               <li>
                 <span className="atribute-title">Weight</span>
-                <span className="atribute-value">{option.weight} lbs</span>
+                <span className="atribute-value">{((option.weight / 10) * 2.2046).toFixed(1)} lbs</span>
               </li>
               <li>
                 <span className="atribute-title">Gender</span>
@@ -125,6 +127,10 @@ export default class Discription extends Component {
           </div> */}
         </div>
       </div>
-    )
+    );
   }
 }
+
+RightContent.propTypes = {
+  pokemon: PropTypes.object,
+};

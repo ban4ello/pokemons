@@ -1,27 +1,23 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Type extends Component {
-  // constructor (props) {
-  //   super(props);
-  //   // this.state = {pokemon: {}};
-  // };
-
-
-  render() {
+  render () {
     const typeName = this.props.name;
     const colors = howColorType(typeName);
+
     return (
-        <div className="type" style={{
-          background: colors.colorType,
-          color: colors.colorFont,
-        }}>
-          <p>{typeName}</p>
-        </div>
+      <div className="type" style={{
+        background: colors.colorType,
+        color: colors.colorFont,
+      }}>
+        <p>{typeName}</p>
+      </div>
     );
   }
 }
 
-function howColorType(typeName) {
+function howColorType (typeName) {
   if (typeName === 'fire') {
     return {
       colorType: '#ff912e',
@@ -135,8 +131,11 @@ function howColorType(typeName) {
   return {
     colorType: '#000',
     colorFont: '#fff',
-  }
-};
+  };
+}
 
+Type.propTypes = {
+  name: PropTypes.string,
+};
 
 export default Type;

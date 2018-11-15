@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import Pokemon from './pokemon.js';
-import {getListAllPokemon, getPokemons, } from './components/fetch.js';
-import  './style/main.scss';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { getPokemonsAction, pokemonsSuccessAction, getAllPokemon } from "./actions/create-actions";
+import Pokemon from '../components/pokemon.js';
+import {getListAllPokemon, getPokemons } from '../api/fetch.js';
+import '../style/main.scss';
+import { connect } from 'react-redux';
+import { getPokemonsAction, pokemonsSuccessAction, getAllPokemon } from '../redux/actions/create-actions';
+import PropTypes from 'prop-types';
 
 
 class Pokemons extends Component {
@@ -14,35 +14,35 @@ class Pokemons extends Component {
       step: 12,
       showBtn: true,
     };
-    this.loadNextPokemon = this.loadNextPokemon.bind(this)
-  };
+    this.loadNextPokemon = this.loadNextPokemon.bind(this);
+  }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.allPokemons.length === 0) {
-     this.pokemonsList();
-   }
-   if (this.props.currentIndex === 0) {
-     this.getNextPokemons();
-   }
-  };
+      this.pokemonsList();
+    }
+    if (this.props.currentIndex === 0) {
+      this.getNextPokemons();
+    }
+  }
 
   pokemonsList () {
     return getListAllPokemon()
-    .then( data => {
-      this.props.getAllPokemon(data)
-    })
+      .then( data => {
+        this.props.getAllPokemon(data);
+      });
   }
 
   getNextPokemons () {
     this.props.getPokemonsAction();
 
     const to = this.props.currentIndex + this.state.step;
+
     return getPokemons(this.props.currentIndex + 1, to)
       .then(pokemonsList => {
-
         this.props.pokemonsSuccessAction({data: pokemonsList, to} );
       });
-  };
+  }
 
   loadNextPokemon () {
     if (this.props.loading) {
@@ -57,11 +57,11 @@ class Pokemons extends Component {
       });
   }
 
-  render() {
-    const validPokemon = this.props.allPokemons.slice(0, this.props.currentIndex)
+  render () {
+    // console.log(this.props);
+    const validPokemon = this.props.allPokemons.slice(0, this.props.currentIndex);
     const pokemon = validPokemon.map((pokemon) => {
-
-      return <Pokemon key={pokemon.id} pokemon={pokemon} />
+      return <Pokemon key={pokemon.id} pokemon={pokemon} />;
     });
 
     const loadMoreButtonClass = `${this.state.showBtn ? 'show' : ''}`;
@@ -85,8 +85,7 @@ class Pokemons extends Component {
       </div>
     );
   }
-  }
-;
+}
 
 export default connect(
   (state) => {
@@ -101,3 +100,13 @@ export default connect(
   },
   { getPokemonsAction, pokemonsSuccessAction, getAllPokemon }
 )(Pokemons);
+
+Pokemons.propTypes = {
+  allPokemons: PropTypes.array,
+  currentIndex: PropTypes.number,
+  loading: PropTypes.bool,
+  showLoader: PropTypes.bool,
+  getAllPokemon: PropTypes.func,
+  getPokemonsAction: PropTypes.func,
+  pokemonsSuccessAction: PropTypes.func,
+};

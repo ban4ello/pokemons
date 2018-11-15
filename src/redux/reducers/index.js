@@ -4,6 +4,6 @@ import pokemonsList from './pokemonsList';
 
 const allReducers = combineReducers({
   pokemonsList,
-})
+});
 
 export default allReducers;

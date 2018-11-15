@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import  './style/insidePokemon.scss';
-import Type from './type.js';
-import {getPokemon, getListAllPokemon, getPokemonSpecies, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol, } from './components/fetch.js';
-import PreviousAndNextPokemon from './components/previousAndNextPokemon.js';
-// import Stats from './components/stats_info.js';
-import RightContent from './components/rightContent.js';
-import Evolution from './components/evolution.js';
-import LeftContent from './components/leftContent.js';
-import { connect } from "react-redux";
-import { getPokemonsAction, getPokemonAction, getAdditionalAction, getAllPokemon, getEvolutionAction, } from "./actions/create-actions";
+import '../style/insidePokemon.scss';
+import Type from '../components/type.js';
+import {getPokemon, getListAllPokemon, getPokemonSpeciesByName, getEvolution, getPokemonInfoEvol } from '../api/fetch.js';
+import PreviousAndNextPokemon from '../components/previousAndNextPokemon.js';
+import RightContent from '../components/rightContent.js';
+import Evolution from '../components/evolution.js';
+import LeftContent from '../components/leftContent.js';
+import { connect } from 'react-redux';
+import { getPokemonAction, getAdditionalAction, getAllPokemon, getEvolutionAction } from '../redux/actions/create-actions';
+import PropTypes from 'prop-types';
 
 class PokemonInside extends Component {
   constructor (props) {
@@ -18,30 +17,28 @@ class PokemonInside extends Component {
       pokemon: {},
       pokemonPrevios: {},
       pokemonNext: {},
-     };
-  };
+    };
+  }
 
-  componentDidMount() {
-    // this.pokemonsList();
-
+  componentDidMount () {
     if (this.props.allPokemons.length === 0) {
       getListAllPokemon()
-      .then( data => {
-        this.props.getAllPokemon(data)
-        this.fetchAllData();
-      })
+        .then( data => {
+          this.props.getAllPokemon(data);
+          this.fetchAllData();
+        });
     }
 
     if (this.props.currentIndex !== 0) {
       this.fetchAllData();
     }
-  };
+  }
 
   componentDidUpdate (prevProps) {
     if (prevProps.match.params.name !== this.props.match.params.name) {
       this.fetchAllData();
     }
-  };
+  }
 
   fetchAllData () {
     const pokemon = this.getPokemonFromList();
@@ -49,7 +46,6 @@ class PokemonInside extends Component {
     if (pokemon) {
       if (!pokemon.discriptionList) {
         this.getDiscriptionPokemon().then((data) => {
-
           if (!pokemon.evolution) {
             this.evolution(data);
             this.updatePokemon(pokemon);
@@ -73,25 +69,25 @@ class PokemonInside extends Component {
           return data.id;
         });
     }
-  };
+  }
 
-  getPokemonFromList() {
+  getPokemonFromList () {
     return this.props.allPokemons.find(({ id, name }) => id >= 0 && (name === this.props.match.params.name || id === +this.props.match.params.name));
   }
 
-  updateStateEvolution(pokemon) {
+  updateStateEvolution (pokemon) {
     this.setState({
       evolution: pokemon.evolution,
       evolutionList: pokemon.evolutionList,
     });
   }
 
-  updateStateDescription(data) {
+  updateStateDescription (data) {
     this.setState({
       discriptionList: data.discriptionList,
       category: data.category,
     });
-  };
+  }
 
   updatePokemon (pokemon) {
     const pokemonsLength = this.props.allPokemons.length;
@@ -103,7 +99,7 @@ class PokemonInside extends Component {
       pokemonPrevios: this.props.allPokemons[prevId],
       pokemonNext: this.props.allPokemons[nextId],
     });
-  };
+  }
 
   getDiscriptionPokemon () {
     return getPokemonSpeciesByName(this.props.match.params.name)
@@ -111,7 +107,7 @@ class PokemonInside extends Component {
         // console.log(data);
         return this.props.getAdditionalAction(data).payload.data;
       });
-  };
+  }
 
   evolutionPokemonList (data) {
     return getPokemonInfoEvol(data, this.props.match.params.name)
@@ -120,7 +116,7 @@ class PokemonInside extends Component {
           if (pokemon.id >= 0) {
             this.props.getPokemonAction(pokemon);
           }
-        })
+        });
         this.props.getEvolutionAction(data);
         this.setState({
           evolution: data,
@@ -130,47 +126,45 @@ class PokemonInside extends Component {
             }
 
             return this.props.allPokemons.find(({ id, name }) => id >= 0 && name === this.props.match.params.name);
-
           }),
         });
+
         return;
       });
   }
 
   evolution (elem) {
     return getEvolution(elem.url)
-    .then(data => {
-      this.evolutionPokemonList(data);
-    });
+      .then(data => {
+        this.evolutionPokemonList(data);
+      });
   }
 
   getOptions (data) {
     let weight = ((data.weight / 10) * 2.2046).toFixed(1);
     let abilities = data.abilities.map((elem) => {
       return elem.ability.name;
-    })
+    });
+
     return {
       weight: weight,
       abilities: abilities[0],
-    }
+    };
   }
 
   getType (data) {
     const typesList = data.types.map((type, index) => {
-      return <Type key={index} name={type.type.name} />
+      return <Type key={index} name={type.type.name} />;
     });
+
     return typesList;
   }
 
-  render() {
-    if (Object.keys(this.state.pokemon).length === 0) return  <div className="loader"></div>
+  render () {
+    if (Object.keys(this.state.pokemon).length === 0) return <div className="loader"></div>;
 
     return (
       <div className="wraper">
-
-        {/* <div className='loader'></div> */}
-
-
         <div className="container pokedex">
 
           <PreviousAndNextPokemon
@@ -190,7 +184,7 @@ class PokemonInside extends Component {
       </div>
     );
   }
-  }
+}
 
 export default connect(
   (state) => {
@@ -204,3 +198,13 @@ export default connect(
   },
   { getAdditionalAction, getAllPokemon, getEvolutionAction, getPokemonAction }
 )(PokemonInside);
+
+PokemonInside.propTypes = {
+  allPokemons: PropTypes.array,
+  getPokemonAction: PropTypes.func,
+  getAllPokemon: PropTypes.func,
+  getEvolutionAction: PropTypes.func,
+  getAdditionalAction: PropTypes.func,
+  currentIndex: PropTypes.number,
+  match: PropTypes.object,
+};
