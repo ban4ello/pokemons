@@ -58,7 +58,6 @@ class Pokemons extends Component {
   }
 
   render () {
-    // console.log(this.props);
     const validPokemon = this.props.allPokemons.slice(0, this.props.currentIndex);
     const pokemon = validPokemon.map((pokemon) => {
       return <Pokemon key={pokemon.id} pokemon={pokemon} />;

@@ -16,7 +16,7 @@ export const getAdditionalAction = (data) => {
     descriptionList: sortList,
     category: data.genera[2].genus,
     url: data.evolution_chain.url,
-    name: data.name,
+    id: data.id,
   };
 
   return {
@@ -51,7 +51,6 @@ export const getPokemonAction = (pokemon) => {
     height: pokemon.height,
     id: pokemon.id,
     index: index,
-    name: pokemon.name,
     stats: pokemon.stats,
     types: pokemon.types,
     weight: pokemon.weight,
@@ -73,6 +72,7 @@ export const getAllPokemon = (data) => {
     }
 
     return {
+      id: i + 1,
       name,
       index: index,
     };
@@ -85,8 +85,6 @@ export const getAllPokemon = (data) => {
 };
 
 export const pokemonsSuccessAction = ({ data, to }) => {
-  // console.log(data);
-
   const newData = data.map((item) => {
     let index = 0;
     if (item.id < 10) {

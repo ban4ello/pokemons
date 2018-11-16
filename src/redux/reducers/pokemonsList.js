@@ -41,7 +41,6 @@ const pokemonsList = (state = getInitialState(), action) => {
 
     return Object.assign({}, state, {
       allPokemons: allPokemonsClone,
-      // test: action.payload.data,
     });
 
   case 'GET_ALLPOKEMON':
@@ -60,38 +59,10 @@ const pokemonsList = (state = getInitialState(), action) => {
 export default pokemonsList;
 
 const updatePokemon = (pokemons, newPokemon) => {
-  const pokemon = pokemons.find(({name}) => name === newPokemon.name);
-
+  const pokemon = pokemons.find(({ id, name }) => id === newPokemon.id || name === newPokemon.name);
   if (pokemon) {
     Object.assign(pokemon, newPokemon);
   }
 
   return pokemons;
 };
-
-// function actionFunction (data) {
-//   return { type: 'a', payload: data};
-// }
-// const component = {props: {}, stata: {}}
-// function getStateFun (state) {
-//   return {
-//     pokemons: state.pokemons,
-//   }
-// }
-// connect({action})(component)
-//
-// function connect (getStateFun, actionsArr) {
-//   return (component) => {
-//     const funForSubscr = () => {
-//       component.props = {...component.props, ...getStateFun(this.store.state)};
-//     }
-//
-//     this.store.subscribe(funForSubscr)
-//
-//     funForSubscr();
-//     actionsArr.forEach(action => {
-//      component.props[action.name] = () => this.store.dispatch(action);
-//    })
-//   }
-// }
-//

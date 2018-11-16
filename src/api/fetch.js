@@ -20,7 +20,6 @@ export function pokemonInfo (endpoint) {
 export function evolutionInfo (url) {
   return fetch(url).then(
     function (response) {
-      // console.log(response);
       if (response.status !== 200) {
         console.log('Looks like there was a problem. Status Code: ' + response.status);
 
@@ -40,7 +39,6 @@ export function evolutionInfo (url) {
 export const getEvolution = (url) => {
   return evolutionInfo(url)
     .then(data => {
-      // console.log(data);
       const arrayEvolution = [];
       let current = 1;
 
@@ -63,36 +61,56 @@ export const getEvolution = (url) => {
     });
 };
 
-export function getPokemonInfoEvol (array, currentPokemonName) {
-  const pokemonsPromises = Array.from(array).map((elem) => {
-    // console.log(elem);
+export function getPokemonInfoEvol (data, currentPokemonName) {
+  const pokemonsPromises = Array.from(data).map((elem) => {
     if (elem.name !== currentPokemonName) {
-      // console.log(111);
       return getPokemon(elem.name);
     }
 
-    return { name: currentPokemonName};
+    return { name: currentPokemonName, level: elem.level };
   });
 
-  return Promise.all(pokemonsPromises).then(
-    (pokemonsList) => {
+  return Promise.all(pokemonsPromises)
+    .then((pokemonsList) => {
       return pokemonsList;
     }
-  );
+    );
 }
 
 export function getPokemon (name) {
+  const pokemonsWithForms = {
+    'minior': 'minior-red-meteor',
+    'mimikyu': 'mimikyu-disguised',
+    'deoxys': 'deoxys-normal',
+    'wormadam': 'wormadam-plant',
+    'giratina': 'giratina-altered',
+    'shaymin': 'shaymin-land',
+    'basculin': 'basculin-red-striped',
+    'darmanitan': 'darmanitan-standard',
+    'tornadus': 'tornadus-incarnate',
+    'thundurus': 'thundurus-incarnate',
+    'landorus': 'landorus-incarnate',
+    'keldeo': 'keldeo-ordinary',
+    'meloetta': 'meloetta-aria',
+    'meowstic': 'meowstic-male',
+    'aegislash': 'aegislash-shield',
+    'pumpkaboo': 'pumpkaboo-average',
+    'gourgeist': 'gourgeist-average',
+    'oricorio': 'oricorio-baile',
+    'lycanroc': 'lycanroc-midday',
+    'wishiwashi': 'wishiwashi-solo',
+  };
+
+  name = pokemonsWithForms[name] ? pokemonsWithForms[name] : name;
+
   return pokemonInfo(`/pokemon/${name}/`);
 }
 
-export function getPokemonSpecies () {
-  return pokemonInfo('/pokemon-species/');
-}
 export function getPokemonSpeciesByName (name) {
   return pokemonInfo(`/pokemon-species/${name}/`);
 }
 export function getListAllPokemon () {
-  return pokemonInfo('/pokemon/');
+  return pokemonInfo('/pokemon-species/');
 }
 
 

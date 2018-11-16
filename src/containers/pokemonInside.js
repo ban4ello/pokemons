@@ -72,7 +72,7 @@ class PokemonInside extends Component {
   }
 
   getPokemonFromList () {
-    return this.props.allPokemons.find(({ id, name }) => id >= 0 && (name === this.props.match.params.name || id === +this.props.match.params.name));
+    return this.props.allPokemons.find(({ id, stats, name }) => stats && (name === this.props.match.params.name || id === +this.props.match.params.name));
   }
 
   updateStateEvolution (pokemon) {
@@ -104,7 +104,6 @@ class PokemonInside extends Component {
   getDiscriptionPokemon () {
     return getPokemonSpeciesByName(this.props.match.params.name)
       .then(data => {
-        // console.log(data);
         return this.props.getAdditionalAction(data).payload.data;
       });
   }

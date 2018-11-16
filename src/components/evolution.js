@@ -22,6 +22,7 @@ class Evolution extends Component {
     return typesList;
   }
   render () {
+    console.log(this.props.evolutions);
     if (!this.props.evolutions || Object.keys(this.props.evolutions).length === 0) return <div>Loading ...</div>;
 
     let onlySecondLevel = this.props.evolutions.filter(({level}) => {
